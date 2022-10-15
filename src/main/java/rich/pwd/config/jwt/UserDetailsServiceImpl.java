@@ -12,6 +12,16 @@ import rich.pwd.repo.UserDao;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+  /*
+    UserDetailsService
+    透過 username 載入 user 的介面
+    回傳 Spring Security 處理 authentication 及 validation 的 UserDetails
+
+    UserDetails
+    包含 username password authorities
+    建立 Authentication object
+  */
+
   @Autowired
   UserDao userDao;
 

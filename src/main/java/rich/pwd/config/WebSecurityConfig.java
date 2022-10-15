@@ -27,6 +27,13 @@ import rich.pwd.config.jwt.UserDetailsServiceImpl;
 )
 public class WebSecurityConfig {
 
+  /*
+    EnableGlobalMethodSecurity
+    啟用 @PreAuthorize, @PostAuthorize 等 Spring AOP 標註檢查
+
+    UserDetailsService
+   */
+
   @Autowired
   UserDetailsServiceImpl userDetailsService;
   @Autowired

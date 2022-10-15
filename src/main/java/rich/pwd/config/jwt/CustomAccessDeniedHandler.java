@@ -19,6 +19,11 @@ import java.util.Map;
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
+  /*
+    AccessDeniedHandler
+    檢查無權限禁止錯誤 403
+  */
+
   private static final Logger logger = LoggerFactory.getLogger(CustomAccessDeniedHandler.class);
 
   @Override

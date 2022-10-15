@@ -32,6 +32,11 @@ public class UserDetailsImpl implements UserDetails {
   }
 
   public static UserDetailsImpl build(User user) {
+
+    /*
+      將 Set<Role> 轉換為 List<GrantedAuthority>
+    */
+
     List<GrantedAuthority> authorityList = user.getRoles().stream()
             .map(role -> new SimpleGrantedAuthority(role.getName().name()))
             .collect(Collectors.toList());

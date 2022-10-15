@@ -45,6 +45,14 @@ public class AuthContr {
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+
+    /*
+      AuthenticationManager 包含裝載 UserDetailsService & PasswordEncoder 的 DaoAuthenticationProvider
+      用於驗證含登入資訊 (LoginRequest) 的 UsernamePasswordAuthenticationToken
+
+      回傳包含授權資訊的 Authentication 物件
+    */
+
     Authentication authentication = authenticationManager
             .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
     SecurityContextHolder.getContext().setAuthentication(authentication);

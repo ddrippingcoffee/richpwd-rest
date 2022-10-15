@@ -18,6 +18,14 @@ import java.io.IOException;
 
 public class AuthTokenFilter extends OncePerRequestFilter {
 
+  /*
+    OncePerRequestFilter
+    提供 doFilterInternal() 用於
+    解析和驗證 JWT
+    加載用戶詳細信息（使用 UserDetailsService ）
+    檢查授權（使用 UsernamePasswordAuthenticationToken ）
+  */
+
   private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
   @Autowired
