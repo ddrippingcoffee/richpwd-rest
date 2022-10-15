@@ -32,16 +32,24 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class AuthContr {
 
+  private final AuthenticationManager authenticationManager;
+  private final UserDao userDao;
+  private final RoleDao roleDao;
+  private final PasswordEncoder encoder;
+  private final JwtUtils jwtUtils;
+
   @Autowired
-  AuthenticationManager authenticationManager;
-  @Autowired
-  UserDao userDao;
-  @Autowired
-  RoleDao roleDao;
-  @Autowired
-  PasswordEncoder encoder;
-  @Autowired
-  JwtUtils jwtUtils;
+  public AuthContr(AuthenticationManager authenticationManager,
+                   UserDao userDao,
+                   RoleDao roleDao,
+                   PasswordEncoder encoder,
+                   JwtUtils jwtUtils) {
+    this.authenticationManager = authenticationManager;
+    this.userDao = userDao;
+    this.roleDao = roleDao;
+    this.encoder = encoder;
+    this.jwtUtils = jwtUtils;
+  }
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {

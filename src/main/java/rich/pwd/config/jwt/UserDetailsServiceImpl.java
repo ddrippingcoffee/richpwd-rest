@@ -22,8 +22,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     建立 Authentication object
   */
 
+  private final UserDao userDao;
+
   @Autowired
-  UserDao userDao;
+  public UserDetailsServiceImpl(UserDao userDao) {
+    this.userDao = userDao;
+  }
 
   @Override
   @Transactional

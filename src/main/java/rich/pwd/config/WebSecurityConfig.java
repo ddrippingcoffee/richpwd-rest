@@ -34,12 +34,18 @@ public class WebSecurityConfig {
     UserDetailsService
    */
 
+  private final UserDetailsServiceImpl userDetailsService;
+  private final AuthEntryPointJwt unauthorizedHandler;
+  private final CustomAccessDeniedHandler accessDeniedHandler;
+
   @Autowired
-  UserDetailsServiceImpl userDetailsService;
-  @Autowired
-  private AuthEntryPointJwt unauthorizedHandler;
-  @Autowired
-  private CustomAccessDeniedHandler accessDeniedHandler;
+  public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
+                           AuthEntryPointJwt unauthorizedHandler,
+                           CustomAccessDeniedHandler accessDeniedHandler) {
+    this.userDetailsService = userDetailsService;
+    this.unauthorizedHandler = unauthorizedHandler;
+    this.accessDeniedHandler = accessDeniedHandler;
+  }
 
   @Bean
   public AuthTokenFilter authenticationJwtTokenFilter() {
