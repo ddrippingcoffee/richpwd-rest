@@ -15,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rich.pwd.config.jwt.AuthEntryPointJwt;
 import rich.pwd.config.jwt.AuthTokenFilter;
+import rich.pwd.config.jwt.CustomAccessDeniedHandler;
 import rich.pwd.config.jwt.UserDetailsServiceImpl;
 
 @Configuration
@@ -30,6 +31,8 @@ public class WebSecurityConfig {
   UserDetailsServiceImpl userDetailsService;
   @Autowired
   private AuthEntryPointJwt unauthorizedHandler;
+  @Autowired
+  private CustomAccessDeniedHandler accessDeniedHandler;
 
   @Bean
   public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -57,8 +60,12 @@ public class WebSecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.cors().and().csrf().disable()
-            .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+            .exceptionHandling()
+            .authenticationEntryPoint(unauthorizedHandler)
+            .accessDeniedHandler(accessDeniedHandler)
+            .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
             .authorizeRequests().antMatchers("/api/auth/**").permitAll()
             .antMatchers("/api/test/**").permitAll()
             .anyRequest().authenticated();
