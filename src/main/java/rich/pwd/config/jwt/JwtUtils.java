@@ -20,18 +20,26 @@ public class JwtUtils {
   @Value("${richpwd.app.jwtSecret}")
   private String jwtSecret;
 
-  @Value("${richpwd.app.jwtExpirationHr}")
-  private int jwtExpirationHr;
+  @Value("${richpwd.app.jwtExpirationSec}")
+  private int jwtExpirationSec;
 
   public String generateJwtToken(Authentication authentication) {
-
     UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+    return generateTokenFromUsername(userPrincipal.getUsername());
+  }
+
+  public String generateTokenFromUsername(String username) {
+
+    /*
+        Jwt 無法手動使 token 失效
+        https://stackoverflow.com/questions/37959945/how-to-destroy-jwt-tokens-on-logout
+     */
 
     ZonedDateTime zdt = LocalDateTime.now().atZone(ZoneId.systemDefault());
     return Jwts.builder()
-            .setSubject(userPrincipal.getUsername())
+            .setSubject(username)
             .setIssuedAt(Date.from(zdt.toInstant()))
-            .setExpiration(Date.from(zdt.plusHours(jwtExpirationHr).toInstant()))
+            .setExpiration(Date.from(zdt.plusSeconds(jwtExpirationSec).toInstant()))
             .signWith(SignatureAlgorithm.HS512, jwtSecret)
             .compact();
   }

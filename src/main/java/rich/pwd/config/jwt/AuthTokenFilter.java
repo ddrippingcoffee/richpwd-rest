@@ -38,6 +38,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                                   HttpServletResponse response,
                                   FilterChain filterChain) throws ServletException, IOException {
     try {
+
+      /*
+         JWT 無法手動使 token 到期
+       */
+
       String jwt = parseJwt(request);
       if (null != jwt && jwtUtils.validateJwtToken(jwt)) {
         String username = jwtUtils.getUsernameFromJwtToken(jwt);
