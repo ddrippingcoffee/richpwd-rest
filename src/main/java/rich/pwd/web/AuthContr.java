@@ -21,6 +21,7 @@ import rich.pwd.repo.RoleDao;
 import rich.pwd.repo.UserDao;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -76,34 +77,35 @@ public class AuthContr {
             signupRequest.getEmail(),
             encoder.encode(signupRequest.getPassword()));
     Set<String> strRoles = signupRequest.getRole();
-
     Set<Role> roles = new HashSet<>();
 
     if (null == strRoles) {
-      Role userRole = roleDao.findByName(RoleEnum.ROLE_USER)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-      roles.add(userRole);
+      return ResponseEntity
+              .badRequest()
+              .body(new MessageResponse("Error: Role is not found in request."));
     } else {
-      strRoles.forEach(role -> {
-        switch (role) {
-          case "admin":
-            Role adminRole = roleDao.findByName(RoleEnum.ROLE_ADMIN)
-                    .orElseThrow(() -> new RuntimeException("Error: Admin Role is not found."));
-            roles.add(adminRole);
-            break;
-          case "mod":
-            Role modRole = roleDao.findByName(RoleEnum.ROLE_MODERATOR)
-                    .orElseThrow(() -> new RuntimeException("Error: Mod Role is not found."));
-            roles.add(modRole);
-            break;
-          default:
-            Role userRole = roleDao.findByName(RoleEnum.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: User Role is not found."));
-            roles.add(userRole);
+      List<String> strRoleList = new ArrayList<>(strRoles);
+      for (int i = 0; i < strRoleList.size(); i++) {
+        Role role;
+        if ("admin".equals(strRoleList.get(i))) {
+          role = roleDao.findByName(RoleEnum.ROLE_ADMIN)
+                  .orElseThrow(() -> new RuntimeException("Error: Admin Role is not found."));
+          roles.add(role);
+        } else if ("mod".equals(strRoleList.get(i))) {
+          role = roleDao.findByName(RoleEnum.ROLE_MODERATOR)
+                  .orElseThrow(() -> new RuntimeException("Error: Mod Role is not found."));
+          roles.add(role);
+        } else if ("user".equals(strRoleList.get(i))) {
+          role = roleDao.findByName(RoleEnum.ROLE_USER)
+                  .orElseThrow(() -> new RuntimeException("Error: User Role is not found."));
+          roles.add(role);
+        } else {
+          return ResponseEntity
+                  .badRequest()
+                  .body(new MessageResponse("Error: Not Accepted Role: " + strRoleList.get(i)));
         }
-      });
+      }
     }
-
     user.setRoles(roles);
     userDao.save(user);
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
