@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rich.pwd.bean.po.RefreshToken;
+import rich.pwd.bean.po.User;
 import rich.pwd.ex.TokenRefreshException;
 import rich.pwd.repo.RefreshTokenDao;
 import rich.pwd.repo.UserDao;
@@ -26,6 +27,10 @@ public class RefreshTokenService {
   public RefreshTokenService(RefreshTokenDao refreshTokenDao, UserDao userDao) {
     this.refreshTokenDao = refreshTokenDao;
     this.userDao = userDao;
+  }
+
+  public Optional<RefreshToken> findByUserId(Long userId) {
+    return refreshTokenDao.findByUser(userDao.findById(userId).get());
   }
 
   public Optional<RefreshToken> findByToken(String token) {
@@ -54,7 +59,7 @@ public class RefreshTokenService {
   }
 
   @Transactional
-  public int deleteByUserId(Long userId) {
-    return refreshTokenDao.deleteByUser(userDao.findById(userId).get());
+  public int deleteByUser(User user) {
+    return refreshTokenDao.deleteByUser(user);
   }
 }

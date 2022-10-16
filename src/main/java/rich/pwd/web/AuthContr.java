@@ -26,16 +26,15 @@ import rich.pwd.repo.RoleDao;
 import rich.pwd.repo.UserDao;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
 // @CrossOrigin(origins = "*", maxAge = 3600)
 public class AuthContr {
+
+  private static final String ANONYMOUS_USER = "anonymousUser";
 
   private final AuthenticationManager authenticationManager;
   private final UserDao userDao;
@@ -78,6 +77,11 @@ public class AuthContr {
             .map(item -> item.getAuthority())
             .collect(Collectors.toList());
 
+    // 刪除舊 token
+    Optional<RefreshToken> user = refreshTokenService.findByUserId(userDetails.getId());
+    if (user.isPresent()) {
+      refreshTokenService.deleteByUser(user.get().getUser());
+    }
     RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
     return ResponseEntity.ok(new JwtResponse(
@@ -153,10 +157,21 @@ public class AuthContr {
 
   @PostMapping("/signout")
   public ResponseEntity<?> logoutUser() {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder
-            .getContext().getAuthentication().getPrincipal();
-    Long userId = userDetails.getId();
-    refreshTokenService.deleteByUserId(userId);
-    return ResponseEntity.ok(new MessageResponse("Log out successful!"));
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (ANONYMOUS_USER.equals(authentication.getPrincipal().toString())) {
+      return ResponseEntity
+              .badRequest()
+              .body(new MessageResponse("Error: Not Accepted Request"));
+    }
+    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+    Optional<RefreshToken> user = refreshTokenService.findByUserId(userDetails.getId());
+    if (!user.isPresent()) {
+      return ResponseEntity
+              .badRequest()
+              .body(new MessageResponse("Error: Already signout"));
+    } else {
+      refreshTokenService.deleteByUser(user.get().getUser());
+      return ResponseEntity.ok(new MessageResponse("Log out successful!"));
+    }
   }
 }
