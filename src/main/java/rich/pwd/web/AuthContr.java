@@ -21,6 +21,7 @@ import rich.pwd.bean.po.User;
 import rich.pwd.config.jwt.JwtUtils;
 import rich.pwd.config.jwt.RefreshTokenService;
 import rich.pwd.config.jwt.UserDetailsImpl;
+import rich.pwd.ex.ResourceNotFoundException;
 import rich.pwd.ex.TokenRefreshException;
 import rich.pwd.repo.RoleDao;
 import rich.pwd.repo.UserDao;
@@ -111,24 +112,22 @@ public class AuthContr {
     Set<Role> roles = new HashSet<>();
 
     if (null == strRoles) {
-      return ResponseEntity
-              .badRequest()
-              .body(new MessageResponse("Error: Role is not found in request."));
+      throw new ResourceNotFoundException("Error: Role is not found in request.");
     } else {
       List<String> strRoleList = new ArrayList<>(strRoles);
       for (int i = 0; i < strRoleList.size(); i++) {
         Role role;
         if ("admin".equals(strRoleList.get(i))) {
           role = roleDao.findByName(RoleEnum.ROLE_ADMIN)
-                  .orElseThrow(() -> new RuntimeException("Error: Admin Role is not found."));
+                  .orElseThrow(() -> new ResourceNotFoundException("Error: Admin Role is not found."));
           roles.add(role);
         } else if ("mod".equals(strRoleList.get(i))) {
           role = roleDao.findByName(RoleEnum.ROLE_MODERATOR)
-                  .orElseThrow(() -> new RuntimeException("Error: Mod Role is not found."));
+                  .orElseThrow(() -> new ResourceNotFoundException("Error: Mod Role is not found."));
           roles.add(role);
         } else if ("user".equals(strRoleList.get(i))) {
           role = roleDao.findByName(RoleEnum.ROLE_USER)
-                  .orElseThrow(() -> new RuntimeException("Error: User Role is not found."));
+                  .orElseThrow(() -> new ResourceNotFoundException("Error: User Role is not found."));
           roles.add(role);
         } else {
           return ResponseEntity
