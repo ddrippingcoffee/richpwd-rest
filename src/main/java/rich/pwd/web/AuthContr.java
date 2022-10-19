@@ -112,7 +112,10 @@ public class AuthContr {
     Set<Role> roles = new HashSet<>();
 
     if (null == strRoles) {
-      throw new ResourceNotFoundException("Error: Role is not found in request.");
+      // Request 未包含 Role 則使用 ROLE_USER
+      Role role = roleDao.findByName(RoleEnum.ROLE_USER)
+              .orElseThrow(() -> new ResourceNotFoundException("Error: User Role is not found."));
+      roles.add(role);
     } else {
       List<String> strRoleList = new ArrayList<>(strRoles);
       for (int i = 0; i < strRoleList.size(); i++) {
