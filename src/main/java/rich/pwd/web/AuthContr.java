@@ -132,7 +132,7 @@ public class AuthContr {
         } else {
           return ResponseEntity
                   .badRequest()
-                  .body(new MessageResponse("Error: Not Accepted Role: " + strRoleList.get(i)));
+                  .body(new MessageResponse("Error: Not accepted role: " + strRoleList.get(i)));
         }
       }
     }
@@ -151,26 +151,26 @@ public class AuthContr {
             .map(user -> {
               String token = jwtUtils.generateTokenFromUsername(user.getUsername());
               return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
-            }).orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token is not in database"));
+            }).orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Error: Refresh token is not in database"));
   }
 
   @PostMapping("/signout")
-  public ResponseEntity<?> logoutUser() {
+  public ResponseEntity<?> signOutUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (ANONYMOUS_USER.equals(authentication.getPrincipal().toString())) {
       return ResponseEntity
               .badRequest()
-              .body(new MessageResponse("Error: Not Accepted Request"));
+              .body(new MessageResponse("Error: Not accepted request"));
     }
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
     Optional<RefreshToken> user = refreshTokenService.findByUserId(userDetails.getId());
     if (!user.isPresent()) {
       return ResponseEntity
               .badRequest()
-              .body(new MessageResponse("Error: Already signout"));
+              .body(new MessageResponse("Error: Already sign out"));
     } else {
       refreshTokenService.deleteByUser(user.get().getUser());
-      return ResponseEntity.ok(new MessageResponse("Log out successful!"));
+      return ResponseEntity.ok(new MessageResponse("sign out successful!"));
     }
   }
 }

@@ -53,7 +53,7 @@ public class RefreshTokenService {
       refreshTokenDao.delete(token);
       throw new TokenRefreshException(
               token.getToken(),
-              "Refresh token was expired. Please make a new signin request");
+              "Refresh token was expired. Please make a new sign-in request");
     }
     return token;
   }
