@@ -9,6 +9,7 @@ import rich.pwd.serv.intf.ComInfoServ;
 
 @RestController
 @RequestMapping("cominfo")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class ComInfoContr {
 
   private final ComInfoServ comInfoServ;
@@ -19,7 +20,6 @@ public class ComInfoContr {
   }
 
   @PostMapping("/")
-  @CrossOrigin(origins = "*", allowedHeaders = "*")
   public ResponseEntity<?> save(@RequestBody ComInfo comInfo) {
     // 自增主鍵會自動填入
     comInfoServ.save(comInfo);
@@ -27,7 +27,6 @@ public class ComInfoContr {
   }
 
   @GetMapping("/")
-  @CrossOrigin(origins = "*", allowedHeaders = "*")
   public ResponseEntity<?> getAll() {
     return new ResponseEntity<>(comInfoServ.findAll(), HttpStatus.OK);
   }

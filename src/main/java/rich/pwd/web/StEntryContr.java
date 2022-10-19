@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("entry")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class StEntryContr {
 
   private final StEntryServ stEntryServ;

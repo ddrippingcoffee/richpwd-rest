@@ -2,7 +2,8 @@
 <configuration>
 
     <!-- log 存放路徑 -->
-    <property name="LOG_PATH" value="./richpwd-rest/logs/dev"/>
+    <property name="LOG_PATH_DEV" value="./richpwd-rest/logs/dev"/>
+    <property name="LOG_PATH_DEV_HISTORY" value="./richpwd-rest/logs/dev/history"/>
 
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
     <conversionRule conversionWord="wex"
@@ -25,14 +26,14 @@
     </appender>
 
     <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/dev.log</file>
+        <file>${LOG_PATH_DEV}/dev.log</file>
         <encoder>
             <pattern>${FILE_LOG_PATTERN}</pattern>
             <charset>${LOG_ENCODING}</charset>
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <fileNamePattern>${LOG_PATH_DEV_HISTORY}.%d{yyyy-MM-dd}.%i</fileNamePattern>
             <maxHistory>365</maxHistory>
             <maxFileSize>10MB</maxFileSize>
             <totalSizeCap>2GB</totalSizeCap>

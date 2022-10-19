@@ -16,5 +16,7 @@ spring:
 #    show-sql: true
 
 richpwd.app.jwtSecret: richpwdSecretKey
-richpwd.app.jwtExpirationSec: 180 # 3 * 60
-richpwd.app.jwtRefreshExpirationSec: 360 # 6 * 60
+# 30分
+richpwd.app.jwtExpirationSec: 1800
+# 3天
+richpwd.app.jwtRefreshExpirationSec: 259200
