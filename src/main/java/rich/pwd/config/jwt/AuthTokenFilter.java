@@ -35,7 +35,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   */
 
   private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
-  private static final List<String> AUTH_PATH_URL_LIST = List.of("/auth/signin", "/auth/signout");
+  private static final List<String> NOT_AUTH_PATH_URL_LIST =
+          List.of("/auth/signin", "/auth/signup", "/auth/refreshtoken", "/test/all");
 
   @Autowired
   private JwtUtils jwtUtils;
@@ -65,8 +66,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
           UsernamePasswordAuthenticationToken authentication =
                   new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-          // 非登入及登出檢查 Access Token 是否能取得 User
-          if (!AUTH_PATH_URL_LIST.contains(request.getServletPath())) {
+          // User 已先登出但 Access Token 未到期
+          // 導致已登出的 User 可透過未到期的 Access Token 繼續訪問
+          // 檢查 Access Token 是否能取得 User
+          if (!NOT_AUTH_PATH_URL_LIST.contains(request.getServletPath())) {
             UserDetailsImpl userDetailImpl = (UserDetailsImpl) authentication.getPrincipal();
             Optional<RefreshToken> user = refreshTokenService.findByUserId(userDetailImpl.getId());
             if (user.isEmpty()) {

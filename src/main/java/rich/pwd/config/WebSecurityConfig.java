@@ -80,8 +80,9 @@ public class WebSecurityConfig {
             .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-            .authorizeRequests().antMatchers("/auth/**").permitAll()
-            .antMatchers("/test/**").permitAll()
+            .authorizeRequests()
+            .antMatchers("/auth/signin", "/auth/signup", "/auth/refreshtoken").permitAll()
+            .antMatchers("/test/all").permitAll()
             .anyRequest().authenticated();
 
     http.authenticationProvider(authenticationProvider());

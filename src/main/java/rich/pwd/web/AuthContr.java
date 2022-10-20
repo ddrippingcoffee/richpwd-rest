@@ -35,8 +35,6 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class AuthContr {
 
-  private static final String ANONYMOUS_USER = "anonymousUser";
-
   private final AuthenticationManager authenticationManager;
   private final UserDao userDao;
   private final RoleDao roleDao;
@@ -160,20 +158,9 @@ public class AuthContr {
   @PostMapping("/signout")
   public ResponseEntity<?> signOutUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (ANONYMOUS_USER.equals(authentication.getPrincipal().toString())) {
-      return ResponseEntity
-              .badRequest()
-              .body(new MessageResponse("Error: Not accepted request"));
-    }
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
     Optional<RefreshToken> user = refreshTokenService.findByUserId(userDetails.getId());
-    if (!user.isPresent()) {
-      return ResponseEntity
-              .badRequest()
-              .body(new MessageResponse("Error: Already sign out"));
-    } else {
-      refreshTokenService.deleteByUser(user.get().getUser());
-      return ResponseEntity.ok(new MessageResponse("sign out successful!"));
-    }
+    refreshTokenService.deleteByUser(user.get().getUser());
+    return ResponseEntity.ok(new MessageResponse("sign out successful!"));
   }
 }
