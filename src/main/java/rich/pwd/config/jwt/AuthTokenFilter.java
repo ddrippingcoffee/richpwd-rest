@@ -74,7 +74,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             Optional<RefreshToken> user = refreshTokenService.findByUserId(userDetailImpl.getId());
             if (user.isEmpty()) {
               logger.error("使用者已登出但 Access Token 未到期, 請求 URL");
-              setInvalidMsgResponse(request, response,
+              setInvalidMsgResponse(request, response, HttpServletResponse.SC_FORBIDDEN,
                       "No access token found, Blocked by filter, Url: " + request.getServletPath());
               return;
             }
@@ -83,15 +83,15 @@ public class AuthTokenFilter extends OncePerRequestFilter {
           SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
           if (JwtTokenEnum.SIGNATURE_EX == validateRslt) {
-            setInvalidMsgResponse(request, response, "SIGNATURE_EX");
+            setInvalidMsgResponse(request, response, HttpServletResponse.SC_FORBIDDEN, "SIGNATURE_EX");
           } else if (JwtTokenEnum.MALFORMED_EX == validateRslt) {
-            setInvalidMsgResponse(request, response, "MALFORMED_EX");
+            setInvalidMsgResponse(request, response, HttpServletResponse.SC_FORBIDDEN, "MALFORMED_EX");
           } else if (JwtTokenEnum.EXPIRED_EX == validateRslt) {
-            setInvalidMsgResponse(request, response, "EXPIRED_EX");
+            setInvalidMsgResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED, "EXPIRED_EX");
           } else if (JwtTokenEnum.UNSUPPORTED_EX == validateRslt) {
-            setInvalidMsgResponse(request, response, "UNSUPPORTED_EX");
+            setInvalidMsgResponse(request, response, HttpServletResponse.SC_FORBIDDEN, "UNSUPPORTED_EX");
           } else if (JwtTokenEnum.ILLEGAL_ARGUMENT_EX == validateRslt) {
-            setInvalidMsgResponse(request, response, "ILLEGAL_ARGUMENT_EX");
+            setInvalidMsgResponse(request, response, HttpServletResponse.SC_FORBIDDEN, "ILLEGAL_ARGUMENT_EX");
           }
           return;
         }
@@ -113,12 +113,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
   private void setInvalidMsgResponse(HttpServletRequest request,
                                      HttpServletResponse response,
+                                     int responseStatusCode,
                                      String errMsg) throws IOException {
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+    response.setStatus(responseStatusCode);
 
     final Map<String, Object> body = new HashMap<>();
-    body.put("status", HttpServletResponse.SC_FORBIDDEN);
+    body.put("status", responseStatusCode);
     body.put("error", "Forbidden");
     body.put("message", errMsg);
     body.put("path", request.getServletPath());
