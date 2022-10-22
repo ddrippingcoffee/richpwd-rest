@@ -1,6 +1,7 @@
 package rich.pwd.repo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 import rich.pwd.bean.po.ComInfo;
 
@@ -14,4 +15,7 @@ public interface ComInfoDao extends JpaRepository<ComInfo, Long> {
   ComInfo findComInfoByComNm(String nm);
 
   List<ComInfo> findComInfosByComIndus(String indus);
+
+  @Modifying
+  int deleteComInfoBySymb(String symb);
 }

@@ -11,4 +11,8 @@ public interface ComInfoServ extends BaseServ<ComInfo, Long> {
   ComInfo findOneByComNm(String nm);
 
   List<ComInfo> findAllByComIndus(String indus);
+
+  int deleteComInfoBySymb(String symb);
+
+  void updateBySymb(String symb, ComInfo comInfo);
 }
