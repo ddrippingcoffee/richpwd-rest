@@ -27,7 +27,7 @@ public class StEntryContr {
     // 自增主鍵會自動填入
     entry.setC8tDtm(LocalDateTime.now());
     stEntryServ.saveAndFlush(entry);
-    return new ResponseEntity<>(null, HttpStatus.CREATED);
+    return new ResponseEntity<>(entry.getC8tDtm(), HttpStatus.CREATED);
   }
 
   @GetMapping("/act")
