@@ -10,6 +10,7 @@ import rich.pwd.ex.TokenRefreshException;
 import rich.pwd.repo.RefreshTokenDao;
 import rich.pwd.repo.UserDao;
 
+import javax.annotation.PostConstruct;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -61,5 +62,11 @@ public class RefreshTokenService {
   @Transactional
   public int deleteByUser(User user) {
     return refreshTokenDao.deleteByUser(user);
+  }
+
+  @PostConstruct
+  @Transactional
+  public void deleteAll() {
+    refreshTokenDao.deleteAll();
   }
 }

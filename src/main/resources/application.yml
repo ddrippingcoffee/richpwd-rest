@@ -1,7 +1,7 @@
 server:
-   servlet:
-     context-path: /richpwd
-   port: 8085
+  servlet:
+    context-path: /richpwd
+  port: 8085
 
 spring:
   datasource:
@@ -20,3 +20,8 @@ richpwd.app.jwtSecret: richpwdSecretKey
 richpwd.app.jwtExpirationSec: 1800
 # 3天
 richpwd.app.jwtRefreshExpirationSec: 259200
+
+# 1分鐘
+#richpwd.app.jwtExpirationSec: 10
+# 5分鐘
+#richpwd.app.jwtRefreshExpirationSec: 30
