@@ -17,4 +17,7 @@ public interface RefreshTokenDao extends JpaRepository<RefreshToken, Long> {
 
   @Modifying
   int deleteByUser(User user);
+
+  @Modifying
+  void deleteAll();
 }
