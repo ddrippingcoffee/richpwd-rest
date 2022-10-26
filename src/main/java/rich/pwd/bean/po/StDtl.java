@@ -32,17 +32,17 @@ public class StDtl implements Serializable {
   /**
    * 註記簡述
    */
-  @Column(name = "DTL_BRF")
+  @Column(name = "DTL_BRF", columnDefinition = "TEXT")
   private String dtlBrf;
   /**
    * 註記資料
    */
-  @Column(name = "DTL_INFO")
+  @Column(name = "DTL_INFO", columnDefinition = "TEXT")
   private String dtlInfo;
   /**
    * 註記其他說明
    */
-  @Column(name = "DTL_DES")
+  @Column(name = "DTL_DES", columnDefinition = "TEXT")
   private String dtlDes;
 
   @ManyToOne(cascade = {}, targetEntity = StEntry.class, optional = false)
