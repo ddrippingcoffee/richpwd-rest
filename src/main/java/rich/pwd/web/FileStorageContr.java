@@ -21,12 +21,12 @@ import java.util.stream.Collectors;
 @RequestMapping("file")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @PreAuthorize("hasRole('ADMIN')")
-public class FileContr {
+public class FileStorageContr {
 
   private final FileStorageServ fileStorageServ;
 
   @Autowired
-  public FileContr(FileStorageServ fileStorageServ) {
+  public FileStorageContr(FileStorageServ fileStorageServ) {
     this.fileStorageServ = fileStorageServ;
   }
 
@@ -44,7 +44,7 @@ public class FileContr {
     List<FileInfo> fileInfos = fileStorageServ.loadAll().map(path -> {
       String filename = path.getFileName().toString();
       String url = MvcUriComponentsBuilder
-              .fromMethodName(FileContr.class, "getFile", path.getFileName().toString())
+              .fromMethodName(FileStorageContr.class, "getFile", path.getFileName().toString())
               .build().toString();
       return new FileInfo(filename, url);
     }).collect(Collectors.toList());
