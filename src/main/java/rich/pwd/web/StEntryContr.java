@@ -35,9 +35,8 @@ public class StEntryContr {
   }
 
   @GetMapping("/act")
-  public ResponseEntity<?> getAllActiveEntry() {
-    List<StEntry> stEntryList = stEntryServ.getAllActiveEntry();
-    return new ResponseEntity<>(stEntryList, HttpStatus.OK);
+  public ResponseEntity<?> getAllActiveComEntry() {
+    return new ResponseEntity<>(stEntryServ.getAllActiveComEntry(), HttpStatus.OK);
   }
 
   @GetMapping("/old")
