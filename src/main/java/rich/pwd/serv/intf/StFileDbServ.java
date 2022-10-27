@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 import rich.pwd.bean.po.StFileDb;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface StFileDbServ extends BaseServ<StFileDb, Long> {
 
@@ -11,7 +12,5 @@ public interface StFileDbServ extends BaseServ<StFileDb, Long> {
 
   void storeAll(String symb, LocalDateTime c8tDtm, MultipartFile[] multipartFile);
 
-  // StFileDb getOneDbFile(String symb, LocalDateTime c8tDtm);
-  //
-  // Stream<StFileDb> getAllFiles();
+  List<StFileDb> findAllBySymbAndC8tDtm(String symb, LocalDateTime c8tDtm);
 }

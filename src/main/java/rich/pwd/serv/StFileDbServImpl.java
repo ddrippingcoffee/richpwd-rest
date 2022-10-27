@@ -9,6 +9,7 @@ import rich.pwd.serv.intf.StFileDbServ;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class StFileDbServImpl extends BaseServImpl<StFileDb, Long, StFileDbDao> implements StFileDbServ {
@@ -37,5 +38,10 @@ public class StFileDbServImpl extends BaseServImpl<StFileDb, Long, StFileDbDao> 
     Arrays.stream(multipartFile).forEach(file -> {
       this.storeOne(symb, c8tDtm, file);
     });
+  }
+
+  @Override
+  public List<StFileDb> findAllBySymbAndC8tDtm(String symb, LocalDateTime c8tDtm) {
+    return super.getRepository().findAllBySymbAndC8tDtm(symb, c8tDtm);
   }
 }

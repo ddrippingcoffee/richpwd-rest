@@ -3,6 +3,7 @@ package rich.pwd.web;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,12 +11,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rich.pwd.bean.dto.payload.response.MessageResponse;
 import rich.pwd.bean.po.StEntry;
+import rich.pwd.bean.po.StFileDb;
 import rich.pwd.ex.ResourceNotFoundException;
 import rich.pwd.serv.intf.StEntryServ;
 import rich.pwd.serv.intf.StFileDbServ;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("entry")
@@ -58,8 +62,8 @@ public class StEntryContr {
   }
 
   @GetMapping("/act")
-  public ResponseEntity<?> getAllActiveComEntry() {
-    return new ResponseEntity<>(stEntryServ.getAllActiveComEntry(), HttpStatus.OK);
+  public ResponseEntity<?> getAllActiveEntry() {
+    return new ResponseEntity<>(stEntryServ.getAllActiveEntry(), HttpStatus.OK);
   }
 
   @GetMapping("/old")
@@ -79,5 +83,16 @@ public class StEntryContr {
               .badRequest()
               .body(new MessageResponse(ex.getMessage()));
     }
+  }
+
+  @GetMapping("/filedb/{uid}")
+  public ResponseEntity<byte[]> getFile(@PathVariable String uid) {
+    StFileDb fileDb = stFileDbServ.findById(Long.parseLong(uid)).orElseThrow();
+
+    String headerValue = "attachment; filename=" +
+            java.net.URLEncoder.encode(Objects.requireNonNull(fileDb.getDbFileNm()), StandardCharsets.UTF_8);
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
+            .body(fileDb.getDbFileData());
   }
 }
