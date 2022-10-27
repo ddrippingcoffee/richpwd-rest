@@ -1,7 +1,5 @@
 package rich.pwd.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -24,7 +22,6 @@ import rich.pwd.util.Key;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,42 +34,21 @@ public class StEntryContr {
   private final StEntryServ stEntryServ;
   private final StFileDbServ stFileDbServ;
   private final StFileFdServ stFileFdServ;
-  private final ObjectMapper objectMapper;
 
   @Autowired
   public StEntryContr(StEntryServ stEntryServ,
                       StFileDbServ stFileDbServ,
-                      StFileFdServ stFileFdServ,
-                      ObjectMapper objectMapper) {
+                      StFileFdServ stFileFdServ) {
     this.stEntryServ = stEntryServ;
     this.stFileDbServ = stFileDbServ;
     this.stFileFdServ = stFileFdServ;
-    this.objectMapper = objectMapper;
   }
 
   @PostMapping("/stores")
-  public ResponseEntity<?> storeAll(@RequestParam("entryStr") String entryStr,
-                                    @RequestParam("fileDbs") MultipartFile[] fileDbs,
-                                    @RequestParam("fileFds") MultipartFile[] fileFds)
-          throws JsonProcessingException {
-    StEntry entry = objectMapper.readValue(entryStr, StEntry.class);
-    entry.setC8tDtm(LocalDateTime.now());
-    stEntryServ.saveAndFlush(entry);
-    try {
-      stFileDbServ.storeAll(entry.getSymb(), entry.getC8tDtm(), fileDbs);
-    } catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-    }
-    stFileFdServ.storeAll(entry.getSymb(), entry.getC8tDtm(), fileFds);
-    return new ResponseEntity<>(entry.getC8tDtm(), HttpStatus.CREATED);
-  }
-
-  @PostMapping("/")
-  public ResponseEntity<?> save(@RequestBody StEntry entry) {
-    // 自增主鍵會自動填入
-    entry.setC8tDtm(LocalDateTime.now());
-    stEntryServ.saveAndFlush(entry);
-    return new ResponseEntity<>(entry.getC8tDtm(), HttpStatus.CREATED);
+  public ResponseEntity<?> storeAll(@RequestParam(value = "entryStr", required = true) String entryStr,
+                                    @RequestParam(value = "fileDbs", required = false) MultipartFile[] fileDbs,
+                                    @RequestParam(value = "fileFds", required = false) MultipartFile[] fileFds) {
+    return new ResponseEntity<>(stEntryServ.c8tStEntry(entryStr, fileDbs, fileFds), HttpStatus.CREATED);
   }
 
   @GetMapping("/act")

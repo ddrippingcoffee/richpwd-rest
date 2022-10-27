@@ -1,7 +1,10 @@
 package rich.pwd.serv;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import rich.pwd.bean.po.ComInfo;
 import rich.pwd.bean.po.StEntry;
 import rich.pwd.bean.vo.StEntryVo;
@@ -23,14 +26,40 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
   private final StFileDbServ stFileDbServ;
   private final StFileFdServ stFileFdServ;
 
+  private final ObjectMapper objectMapper;
+
   public StEntryServImpl(StEntryDao repository,
                          ComInfoServ comInfoServ,
                          StFileDbServ stFileDbServ,
-                         StFileFdServ stFileFdServ) {
+                         StFileFdServ stFileFdServ,
+                         ObjectMapper objectMapper) {
     super(repository);
     this.comInfoServ = comInfoServ;
     this.stFileDbServ = stFileDbServ;
     this.stFileFdServ = stFileFdServ;
+    this.objectMapper = objectMapper;
+  }
+
+  @Override
+  @Transactional
+  public LocalDateTime c8tStEntry(String entryStr,
+                                  MultipartFile[] fileDbs,
+                                  MultipartFile[] fileFds) {
+    StEntry entry = null;
+    try {
+      entry = objectMapper.readValue(entryStr, StEntry.class);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+    entry.setC8tDtm(LocalDateTime.now());
+    this.save(entry);
+    if (null != fileDbs) {
+      stFileDbServ.storeAll(entry.getSymb(), entry.getC8tDtm(), fileDbs);
+    }
+    if (null != fileFds) {
+      stFileFdServ.storeAll(entry.getSymb(), entry.getC8tDtm(), fileFds);
+    }
+    return entry.getC8tDtm();
   }
 
   @Override
