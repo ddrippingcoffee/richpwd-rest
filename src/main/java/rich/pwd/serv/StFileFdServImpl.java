@@ -1,16 +1,25 @@
 package rich.pwd.serv;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rich.pwd.bean.po.StFileFd;
+import rich.pwd.bean.vo.StFileVo;
 import rich.pwd.repo.StFileFdDao;
 import rich.pwd.serv.intf.StFileFdServ;
 import rich.pwd.util.Key;
 
+import java.io.IOException;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StFileFdServImpl extends BaseServImpl<StFileFd, Long, StFileFdDao> implements StFileFdServ {
@@ -40,7 +49,29 @@ public class StFileFdServImpl extends BaseServImpl<StFileFd, Long, StFileFdDao> 
   }
 
   @Override
-  public List<StFileFd> findAllBySymbAndC8tDtm(String symb, LocalDateTime c8tDtm) {
-    return super.getRepository().findAllBySymbAndC8tDtm(symb, c8tDtm);
+  public List<StFileVo> findAllActiveFdFile(String symb, LocalDateTime c8tDtm) {
+    return super.getRepository().findAllBySymbAndC8tDtm(symb, c8tDtm)
+            .stream().map(fdFile -> {
+              Path file = Key.RESOURCES_FILE_FOLDER.resolve(fdFile.getFdFileNm());
+              long contentLength = -1;
+              try {
+                Resource resource = new UrlResource(file.toUri());
+                contentLength = resource.contentLength();
+              } catch (IOException e) {
+                throw new RuntimeException(e);
+              }
+              String fileUrl = ServletUriComponentsBuilder
+                      .fromCurrentContextPath()
+                      .path("/entry/filefd/").path(Long.toString(fdFile.getUid()))
+                      .toUriString();
+              FileNameMap fileNameMap = URLConnection.getFileNameMap();
+              String mimeType = fileNameMap.getContentTypeFor(fdFile.getFdFileNm());
+              return StFileVo.builder()
+                      .name(fdFile.getFdFileNm())
+                      .url(fileUrl)
+                      .type(mimeType)
+                      .size(contentLength)
+                      .build();
+            }).collect(Collectors.toList());
   }
 }
