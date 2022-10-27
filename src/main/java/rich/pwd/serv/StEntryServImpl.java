@@ -1,5 +1,7 @@
 package rich.pwd.serv;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -12,7 +14,13 @@ import rich.pwd.repo.StEntryDao;
 import rich.pwd.serv.intf.ComInfoServ;
 import rich.pwd.serv.intf.StEntryServ;
 import rich.pwd.serv.intf.StFileDbServ;
+import rich.pwd.serv.intf.StFileFdServ;
+import rich.pwd.util.Key;
 
+import java.io.IOException;
+import java.net.FileNameMap;
+import java.net.URLConnection;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,13 +30,16 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
 
   private final ComInfoServ comInfoServ;
   private final StFileDbServ stFileDbServ;
+  private final StFileFdServ stFileFdServ;
 
   public StEntryServImpl(StEntryDao repository,
                          ComInfoServ comInfoServ,
-                         StFileDbServ stFileDbServ) {
+                         StFileDbServ stFileDbServ,
+                         StFileFdServ stFileFdServ) {
     super(repository);
     this.comInfoServ = comInfoServ;
     this.stFileDbServ = stFileDbServ;
+    this.stFileFdServ = stFileFdServ;
   }
 
   @Override
@@ -51,13 +62,38 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
                                 .size(dbFile.getDbFileData().length)
                                 .build();
                       }).collect(Collectors.toList());
+              List<StFileDbVo> fileFdVos = stFileFdServ
+                      .findAllBySymbAndC8tDtm(entry.getSymb(), entry.getC8tDtm())
+                      .stream().map(fdFile -> {
+                        Path file = Key.RESOURCES_FILE_FOLDER.resolve(fdFile.getFdFileNm());
+                        long contentLength = -1;
+                        try {
+                          Resource resource = new UrlResource(file.toUri());
+                          contentLength = resource.contentLength();
+                        } catch (IOException e) {
+                          throw new RuntimeException(e);
+                        }
+                        String fileUrl = ServletUriComponentsBuilder
+                                .fromCurrentContextPath()
+                                .path("/entry/filefd/").path(Long.toString(fdFile.getUid()))
+                                .toUriString();
+                        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+                        String mimeType = fileNameMap.getContentTypeFor(fdFile.getFdFileNm());
+                        return StFileDbVo.builder()
+                                .name(fdFile.getFdFileNm())
+                                .url(fileUrl)
+                                .type(mimeType)
+                                .size(contentLength)
+                                .build();
+                      }).collect(Collectors.toList());
               return StEntryVo.builder()
                       .stEntry(entry)
                       .stDtlList(entry.getStDtlList())
                       .comNm(comInfo.getComNm())
                       .comType(comInfo.getComType())
                       .comIndus(comInfo.getComIndus())
-                      .fileDbVos(fileDbVos).build();
+                      .fileDbVos(fileDbVos)
+                      .fileFdVos(fileFdVos).build();
             }).collect(Collectors.toList());
   }
 

@@ -19,4 +19,6 @@ public class StEntryVo {
   private String comIndus;
 
   private List<StFileDbVo> fileDbVos;
+
+  private List<StFileDbVo> fileFdVos;
 }
