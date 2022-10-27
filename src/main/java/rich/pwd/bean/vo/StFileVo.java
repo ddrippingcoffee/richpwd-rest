@@ -1,11 +1,11 @@
-package rich.pwd.bean.dto;
+package rich.pwd.bean.vo;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
-public class FileDbInfoDto {
+@Builder
+public class StFileVo {
 
   private String name;
   private String url;

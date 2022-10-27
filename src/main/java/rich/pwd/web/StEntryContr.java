@@ -100,8 +100,11 @@ public class StEntryContr {
   }
 
   @GetMapping("/filedb/{uid}")
-  public ResponseEntity<byte[]> getFile(@PathVariable String uid) {
+  public ResponseEntity<?> getFile(@PathVariable String uid) {
     StFileDb fileDb = stFileDbServ.findById(Long.parseLong(uid)).orElseThrow();
+
+    // https://blog.csdn.net/qq_42231437/article/details/107815358
+    // 設置了 header 之後，直接用瀏覽器測試，不要用 postman 測試
 
     String headerValue = "attachment; filename=" +
             java.net.URLEncoder.encode(Objects.requireNonNull(fileDb.getDbFileNm()), StandardCharsets.UTF_8);
@@ -115,6 +118,9 @@ public class StEntryContr {
     StFileFd fileFd = stFileFdServ.findById(Long.parseLong(uid)).orElseThrow();
     Path file = Key.RESOURCES_FILE_FOLDER.resolve(fileFd.getFdFileNm());
     Resource resource = new UrlResource(file.toUri());
+
+    // https://blog.csdn.net/qq_42231437/article/details/107815358
+    // 設置了 header 之後，直接用瀏覽器測試，不要用 postman 測試
 
     String headerValue = "attachment; filename=" +
             java.net.URLEncoder.encode(Objects.requireNonNull(resource.getFilename()), StandardCharsets.UTF_8);

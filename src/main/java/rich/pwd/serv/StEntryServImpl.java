@@ -7,9 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rich.pwd.bean.po.ComInfo;
 import rich.pwd.bean.po.StEntry;
-import rich.pwd.bean.vo.StComEntryVo;
 import rich.pwd.bean.vo.StEntryVo;
-import rich.pwd.bean.vo.StFileDbVo;
+import rich.pwd.bean.vo.StFileVo;
 import rich.pwd.repo.StEntryDao;
 import rich.pwd.serv.intf.ComInfoServ;
 import rich.pwd.serv.intf.StEntryServ;
@@ -48,21 +47,21 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
             .findAllByDelDtmIsNullOrderByC8tDtmDesc()
             .stream().map(entry -> {
               ComInfo comInfo = comInfoServ.findOneBySymb(entry.getSymb());
-              List<StFileDbVo> fileDbVos = stFileDbServ
+              List<StFileVo> fileDbVos = stFileDbServ
                       .findAllBySymbAndC8tDtm(entry.getSymb(), entry.getC8tDtm())
                       .stream().map(dbFile -> {
                         String fileUrl = ServletUriComponentsBuilder
                                 .fromCurrentContextPath()
                                 .path("/entry/filedb/").path(Long.toString(dbFile.getUid()))
                                 .toUriString();
-                        return StFileDbVo.builder()
+                        return StFileVo.builder()
                                 .name(dbFile.getDbFileNm())
                                 .url(fileUrl)
                                 .type(dbFile.getDbFileTy())
                                 .size(dbFile.getDbFileData().length)
                                 .build();
                       }).collect(Collectors.toList());
-              List<StFileDbVo> fileFdVos = stFileFdServ
+              List<StFileVo> fileFdVos = stFileFdServ
                       .findAllBySymbAndC8tDtm(entry.getSymb(), entry.getC8tDtm())
                       .stream().map(fdFile -> {
                         Path file = Key.RESOURCES_FILE_FOLDER.resolve(fdFile.getFdFileNm());
@@ -79,7 +78,7 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
                                 .toUriString();
                         FileNameMap fileNameMap = URLConnection.getFileNameMap();
                         String mimeType = fileNameMap.getContentTypeFor(fdFile.getFdFileNm());
-                        return StFileDbVo.builder()
+                        return StFileVo.builder()
                                 .name(fdFile.getFdFileNm())
                                 .url(fileUrl)
                                 .type(mimeType)
@@ -95,20 +94,6 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
                       .fileDbVos(fileDbVos)
                       .fileFdVos(fileFdVos).build();
             }).collect(Collectors.toList());
-  }
-
-  @Override
-  public List<StComEntryVo> getAllActiveComEntry() {
-    List<StEntry> entryList = super.getRepository()
-            .findAllByDelDtmIsNullOrderByC8tDtmDesc();
-    return entryList.stream().map(entry -> {
-      ComInfo comInfo = comInfoServ.findOneBySymb(entry.getSymb());
-      return new StComEntryVo(entry,
-              entry.getStDtlList(),
-              comInfo.getComNm(),
-              comInfo.getComType(),
-              comInfo.getComIndus());
-    }).collect(Collectors.toList());
   }
 
   @Override
