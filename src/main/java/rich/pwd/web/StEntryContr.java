@@ -76,7 +76,7 @@ public class StEntryContr {
   }
 
   @GetMapping("/filedb/{uid}")
-  public ResponseEntity<?> getFile(@PathVariable String uid) {
+  public ResponseEntity<?> downloadFileDb(@PathVariable String uid) {
     StFileDb fileDb = stFileDbServ.findById(Long.parseLong(uid)).orElseThrow();
 
     // https://blog.csdn.net/qq_42231437/article/details/107815358
@@ -90,7 +90,7 @@ public class StEntryContr {
   }
 
   @GetMapping("/filefd/{uid}")
-  public ResponseEntity<?> getFileFd(@PathVariable String uid) throws MalformedURLException {
+  public ResponseEntity<?> downloadFileFd(@PathVariable String uid) throws MalformedURLException {
     StFileFd fileFd = stFileFdServ.findById(Long.parseLong(uid)).orElseThrow();
     Path file = Key.RESOURCES_FILE_FOLDER.resolve(fileFd.getFdFileNm());
     Resource resource = new UrlResource(file.toUri());

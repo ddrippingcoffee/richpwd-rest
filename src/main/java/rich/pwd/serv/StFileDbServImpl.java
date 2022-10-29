@@ -1,8 +1,8 @@
 package rich.pwd.serv;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rich.pwd.bean.po.StFileDb;
 import rich.pwd.bean.vo.StFileVo;
 import rich.pwd.repo.StFileDbDao;
@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class StFileDbServImpl extends BaseServImpl<StFileDb, Long, StFileDbDao> implements StFileDbServ {
+
+  private static final String IMAGE_TYPE = "image/jpeg";
 
   public StFileDbServImpl(StFileDbDao repository) {
     super(repository);
@@ -47,15 +49,16 @@ public class StFileDbServImpl extends BaseServImpl<StFileDb, Long, StFileDbDao> 
   public List<StFileVo> findAllActiveDbFile(String symb, LocalDateTime c8tDtm) {
     return super.getRepository().findAllBySymbAndC8tDtm(symb, c8tDtm)
             .stream().map(dbFile -> {
-              String fileUrl = ServletUriComponentsBuilder
-                      .fromCurrentContextPath()
-                      .path("/entry/filedb/").path(Long.toString(dbFile.getUid()))
-                      .toUriString();
+              String base64ImgStr = null;
+              if (IMAGE_TYPE.equals(dbFile.getDbFileTy())) {
+                base64ImgStr = Base64Utils.encodeToString(dbFile.getDbFileData());
+              }
               return StFileVo.builder()
+                      .fileUid(String.valueOf(dbFile.getUid()))
                       .name(dbFile.getDbFileNm())
-                      .url(fileUrl)
                       .type(dbFile.getDbFileTy())
                       .size(dbFile.getDbFileData().length)
+                      .base64ImgStr(base64ImgStr)
                       .build();
             }).collect(Collectors.toList());
   }

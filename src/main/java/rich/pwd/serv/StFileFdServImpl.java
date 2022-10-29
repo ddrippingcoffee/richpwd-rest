@@ -3,8 +3,8 @@ package rich.pwd.serv;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rich.pwd.bean.po.StFileFd;
 import rich.pwd.bean.vo.StFileVo;
 import rich.pwd.repo.StFileFdDao;
@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class StFileFdServImpl extends BaseServImpl<StFileFd, Long, StFileFdDao> implements StFileFdServ {
+
+  private static final String IMAGE_TYPE = "image/jpeg";
 
   public StFileFdServImpl(StFileFdDao repository) {
     super(repository);
@@ -54,23 +56,24 @@ public class StFileFdServImpl extends BaseServImpl<StFileFd, Long, StFileFdDao> 
             .stream().map(fdFile -> {
               Path file = Key.RESOURCES_FILE_FOLDER.resolve(fdFile.getFdFileNm());
               long contentLength = -1;
+              String base64ImgStr = null;
               try {
                 Resource resource = new UrlResource(file.toUri());
                 contentLength = resource.contentLength();
+                if (IMAGE_TYPE.equals(fdFile.getFdFileTy())) {
+                  base64ImgStr = Base64Utils.encodeToString(resource.getInputStream().readAllBytes());
+                }
               } catch (IOException e) {
                 throw new RuntimeException(e);
               }
-              String fileUrl = ServletUriComponentsBuilder
-                      .fromCurrentContextPath()
-                      .path("/entry/filefd/").path(Long.toString(fdFile.getUid()))
-                      .toUriString();
               FileNameMap fileNameMap = URLConnection.getFileNameMap();
               String mimeType = fileNameMap.getContentTypeFor(fdFile.getFdFileNm());
               return StFileVo.builder()
+                      .fileUid(String.valueOf(fdFile.getUid()))
                       .name(fdFile.getFdFileNm())
-                      .url(fileUrl)
                       .type(mimeType)
                       .size(contentLength)
+                      .base64ImgStr(base64ImgStr)
                       .build();
             }).collect(Collectors.toList());
   }

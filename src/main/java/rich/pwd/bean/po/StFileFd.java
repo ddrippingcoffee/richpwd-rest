@@ -34,4 +34,8 @@ public class StFileFd {
   @NotNull
   @Column(name = "FD_FILE_NM")
   private String fdFileNm;
+
+  @NotNull
+  @Column(name = "FD_FILE_TY")
+  private String fdFileTy;
 }

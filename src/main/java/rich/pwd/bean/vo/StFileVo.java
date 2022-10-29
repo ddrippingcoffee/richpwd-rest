@@ -7,8 +7,9 @@ import lombok.Data;
 @Builder
 public class StFileVo {
 
+  private String fileUid;
   private String name;
-  private String url;
   private String type;
   private long size;
+  private String base64ImgStr;
 }
