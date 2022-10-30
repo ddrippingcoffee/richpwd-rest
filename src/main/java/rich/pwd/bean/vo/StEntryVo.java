@@ -2,7 +2,6 @@ package rich.pwd.bean.vo;
 
 import lombok.Builder;
 import lombok.Data;
-import rich.pwd.bean.po.StDtl;
 import rich.pwd.bean.po.StEntry;
 
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.List;
 public class StEntryVo {
 
   private StEntry stEntry;
-  private List<StDtl> stDtlList;
 
   private String comNm;
   private String comType;

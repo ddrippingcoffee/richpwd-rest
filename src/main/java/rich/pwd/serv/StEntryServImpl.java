@@ -72,7 +72,6 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
               List<StFileVo> fileFdVos = stFileFdServ.findAllActiveFdFile(entry.getSymb(), entry.getC8tDtm());
               return StEntryVo.builder()
                       .stEntry(entry)
-                      .stDtlList(entry.getStDtlList())
                       .comNm(comInfo.getComNm())
                       .comType(comInfo.getComType())
                       .comIndus(comInfo.getComIndus())
