@@ -16,8 +16,8 @@ spring:
   #    show-sql: true
   servlet:
     multipart:
-      max-file-size: 1MB
-      max-request-size: 10MB
+      max-file-size: 3MB
+      max-request-size: 20MB
 
 
 richpwd.app.jwtSecret: richpwdSecretKey
