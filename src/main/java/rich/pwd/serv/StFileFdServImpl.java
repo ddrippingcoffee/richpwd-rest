@@ -71,7 +71,7 @@ public class StFileFdServImpl extends BaseServImpl<StFileFd, Long, StFileFdDao> 
               }
               return StFileVo.builder()
                       .fileUid(String.valueOf(fdFile.getUid()))
-                      .name(fdFile.getFdFileNm())
+                      .name(fdFile.getFdFileNm().substring(15))
                       .type(fdFile.getFdFileTy())
                       .size(contentLength)
                       .base64ImgStr(base64ImgStr)
