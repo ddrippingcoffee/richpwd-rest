@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Service
 public class StFileFdServImpl extends BaseServImpl<StFileFd, Long, StFileFdDao> implements StFileFdServ {
 
-  private static final String IMAGE_TYPE = "image/jpeg";
+  private static final String IMAGE_TYPE = "image";
 
   public StFileFdServImpl(StFileFdDao repository) {
     super(repository);
@@ -63,8 +63,11 @@ public class StFileFdServImpl extends BaseServImpl<StFileFd, Long, StFileFdDao> 
               try {
                 Resource resource = new UrlResource(file.toUri());
                 contentLength = resource.contentLength();
-                if (IMAGE_TYPE.equals(fdFile.getFdFileTy())) {
-                  base64ImgStr = Base64Utils.encodeToString(resource.getInputStream().readAllBytes());
+                if (IMAGE_TYPE.equals(fdFile.getFdFileTy().substring(0, 5))) {
+                  base64ImgStr = "data:" +
+                          fdFile.getFdFileTy() +
+                          ";base64," +
+                          Base64Utils.encodeToString(resource.getInputStream().readAllBytes());
                 }
               } catch (IOException e) {
                 throw new RuntimeException(e);

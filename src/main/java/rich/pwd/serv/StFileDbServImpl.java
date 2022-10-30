@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class StFileDbServImpl extends BaseServImpl<StFileDb, Long, StFileDbDao> implements StFileDbServ {
 
-  private static final String IMAGE_TYPE = "image/jpeg";
+  private static final String IMAGE_TYPE = "image";
 
   public StFileDbServImpl(StFileDbDao repository) {
     super(repository);
@@ -50,8 +50,11 @@ public class StFileDbServImpl extends BaseServImpl<StFileDb, Long, StFileDbDao> 
     return super.getRepository().findAllBySymbAndC8tDtm(symb, c8tDtm)
             .stream().map(dbFile -> {
               String base64ImgStr = null;
-              if (IMAGE_TYPE.equals(dbFile.getDbFileTy())) {
-                base64ImgStr = Base64Utils.encodeToString(dbFile.getDbFileData());
+              if (IMAGE_TYPE.equals(dbFile.getDbFileTy().substring(0, 5))) {
+                base64ImgStr = "data:" +
+                        dbFile.getDbFileTy() +
+                        ";base64," +
+                        Base64Utils.encodeToString(dbFile.getDbFileData());
               }
               return StFileVo.builder()
                       .fileUid(String.valueOf(dbFile.getUid()))
