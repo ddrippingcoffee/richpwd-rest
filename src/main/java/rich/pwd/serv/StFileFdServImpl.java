@@ -12,8 +12,6 @@ import rich.pwd.serv.intf.StFileFdServ;
 import rich.pwd.util.Key;
 
 import java.io.IOException;
-import java.net.FileNameMap;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -33,14 +31,19 @@ public class StFileFdServImpl extends BaseServImpl<StFileFd, Long, StFileFdDao> 
   @Override
   public void storeOne(String symb, LocalDateTime c8tDtm, MultipartFile multipartFile) {
     String fileName = c8tDtm.format(Key.yyMMDD_HHmmss_fmt) + "_" + multipartFile.getOriginalFilename();
-    StFileFd fileFd = StFileFd.builder().symb(symb).c8tDtm(c8tDtm).fdFileNm(fileName).build();
-    super.getRepository().save(fileFd);
     try {
       Files.copy(multipartFile.getInputStream(),
               Key.RESOURCES_FILE_FOLDER.resolve(fileName));
     } catch (Exception e) {
       throw new RuntimeException("檔案儲存失敗: " + e.getMessage());
     }
+    StFileFd fileFd = StFileFd.builder()
+            .symb(symb)
+            .c8tDtm(c8tDtm)
+            .fdFileNm(fileName)
+            .fdFileTy(multipartFile.getContentType())
+            .build();
+    super.getRepository().save(fileFd);
   }
 
   @Override
@@ -66,12 +69,10 @@ public class StFileFdServImpl extends BaseServImpl<StFileFd, Long, StFileFdDao> 
               } catch (IOException e) {
                 throw new RuntimeException(e);
               }
-              FileNameMap fileNameMap = URLConnection.getFileNameMap();
-              String mimeType = fileNameMap.getContentTypeFor(fdFile.getFdFileNm());
               return StFileVo.builder()
                       .fileUid(String.valueOf(fdFile.getUid()))
                       .name(fdFile.getFdFileNm())
-                      .type(mimeType)
+                      .type(fdFile.getFdFileTy())
                       .size(contentLength)
                       .base64ImgStr(base64ImgStr)
                       .build();
