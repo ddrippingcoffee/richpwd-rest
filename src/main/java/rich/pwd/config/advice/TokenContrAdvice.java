@@ -5,7 +5,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import rich.pwd.bean.dto.payload.ErrorMessage;
+import rich.pwd.config.YmlProperties;
 import rich.pwd.ex.ResourceNotFoundException;
 import rich.pwd.ex.TokenRefreshException;
 
@@ -40,6 +42,20 @@ public class TokenContrAdvice {
             HttpStatus.NOT_FOUND.value(),
             LocalDateTime.now(),
             ex.getMessage(),
+            request.getDescription(false));
+  }
+
+  private final String FILE_TOO_LARGE_MESSAGE = "Error:" +
+          " Each file max size: " + YmlProperties.MaxUploadSizePerFile +
+          ", Request file max size: " + YmlProperties.MaxUploadSizePerRequest;
+
+  @ExceptionHandler(value = MaxUploadSizeExceededException.class)
+  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
+  public ErrorMessage handleMaxSizeException(WebRequest request) {
+    return new ErrorMessage(
+            HttpStatus.EXPECTATION_FAILED.value(),
+            LocalDateTime.now(),
+            FILE_TOO_LARGE_MESSAGE,
             request.getDescription(false));
   }
 }
