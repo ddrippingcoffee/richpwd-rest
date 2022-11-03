@@ -6,8 +6,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rich.pwd.bean.po.User;
-import rich.pwd.repo.UserDao;
+import rich.pwd.config.jwt.bean.po.User;
+import rich.pwd.config.jwt.repo.UserDao;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {

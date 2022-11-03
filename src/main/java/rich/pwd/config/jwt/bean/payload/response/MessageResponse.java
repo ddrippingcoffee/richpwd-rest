@@ -1,4 +1,4 @@
-package rich.pwd.bean.dto.payload.response;
+package rich.pwd.config.jwt.bean.payload.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

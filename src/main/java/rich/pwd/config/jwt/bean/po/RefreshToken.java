@@ -1,4 +1,4 @@
-package rich.pwd.bean.po;
+package rich.pwd.config.jwt.bean.po;
 
 import javax.persistence.*;
 import java.time.Instant;

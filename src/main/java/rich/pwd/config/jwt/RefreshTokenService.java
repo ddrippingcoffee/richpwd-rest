@@ -3,12 +3,12 @@ package rich.pwd.config.jwt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rich.pwd.bean.po.RefreshToken;
-import rich.pwd.bean.po.User;
+import rich.pwd.config.jwt.bean.po.RefreshToken;
+import rich.pwd.config.jwt.bean.po.User;
 import rich.pwd.config.YmlProperties;
-import rich.pwd.ex.TokenRefreshException;
-import rich.pwd.repo.RefreshTokenDao;
-import rich.pwd.repo.UserDao;
+import rich.pwd.config.jwt.ex.TokenRefreshException;
+import rich.pwd.config.jwt.repo.RefreshTokenDao;
+import rich.pwd.config.jwt.repo.UserDao;
 
 import java.time.Instant;
 import java.util.Optional;

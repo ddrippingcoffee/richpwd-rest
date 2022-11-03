@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import rich.pwd.bean.dto.payload.response.MessageResponse;
+import rich.pwd.config.jwt.bean.payload.response.MessageResponse;
 import rich.pwd.bean.po.ComInfo;
 import rich.pwd.ex.ResourceNotFoundException;
 import rich.pwd.serv.intf.ComInfoServ;

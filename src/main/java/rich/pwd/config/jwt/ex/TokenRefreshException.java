@@ -1,4 +1,4 @@
-package rich.pwd.ex;
+package rich.pwd.config.jwt.ex;
 
 public class TokenRefreshException extends RuntimeException {
 

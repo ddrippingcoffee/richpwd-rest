@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import rich.pwd.bean.po.RefreshToken;
+import rich.pwd.config.jwt.bean.po.RefreshToken;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
