@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import rich.pwd.config.YmlProperties;
 
@@ -40,6 +41,12 @@ public class JwtUtils {
 
   public String getUsernameFromJwtToken(String token) {
     return Jwts.parser().setSigningKey(YmlProperties.JwtSecret).parseClaimsJws(token).getBody().getSubject();
+  }
+
+  public Long getUserIdFromAuthentication() {
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext()
+            .getAuthentication().getPrincipal();
+    return userDetails.getId();
   }
 
   public JwtTokenEnum validateJwtToken(String authToken) {

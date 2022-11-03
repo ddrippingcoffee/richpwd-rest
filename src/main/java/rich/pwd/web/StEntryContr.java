@@ -9,10 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import rich.pwd.config.jwt.bean.payload.response.MessageResponse;
 import rich.pwd.bean.po.StEntry;
 import rich.pwd.bean.po.StFileDb;
 import rich.pwd.bean.po.StFileFd;
+import rich.pwd.config.jwt.bean.payload.response.MessageResponse;
 import rich.pwd.ex.ResourceNotFoundException;
 import rich.pwd.serv.intf.StEntryServ;
 import rich.pwd.serv.intf.StFileDbServ;
@@ -22,7 +22,6 @@ import rich.pwd.util.Key;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -56,17 +55,11 @@ public class StEntryContr {
     return new ResponseEntity<>(stEntryServ.getAllActiveEntry(), HttpStatus.OK);
   }
 
-  @GetMapping("/old")
-  public ResponseEntity<?> getAllOldEntry() {
-    List<StEntry> stEntryList = stEntryServ.getAllOldEntry();
-    return new ResponseEntity<>(stEntryList, HttpStatus.OK);
-  }
-
   @PutMapping("/")
   public ResponseEntity<?> updateEntryDeleteTime(@RequestBody StEntry entry) {
     try {
       return new ResponseEntity<>(
-              stEntryServ.updateDeleteTimeBySymbAndC8tDtm(entry.getSymb(), entry.getC8tDtm()),
+              stEntryServ.updateDeleteTimeByUserIdAndSymbAndC8tDtm(entry.getSymb(), entry.getC8tDtm()),
               HttpStatus.OK);
     } catch (ResourceNotFoundException ex) {
       return ResponseEntity

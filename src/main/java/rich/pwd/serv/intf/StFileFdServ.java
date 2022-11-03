@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface StFileFdServ extends BaseServ<StFileFd, Long> {
 
-  void storeOne(String symb, LocalDateTime c8tDtm, MultipartFile multipartFile);
+  void storeOne(Long userId, String symb, LocalDateTime c8tDtm, MultipartFile multipartFile);
 
   void storeAll(String symb, LocalDateTime c8tDtm, MultipartFile[] multipartFiles);
 

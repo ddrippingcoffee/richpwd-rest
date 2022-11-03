@@ -5,6 +5,7 @@ import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
 import rich.pwd.bean.po.StFileDb;
 import rich.pwd.bean.vo.StFileVo;
+import rich.pwd.config.jwt.JwtUtils;
 import rich.pwd.repo.StFileDbDao;
 import rich.pwd.serv.intf.StFileDbServ;
 
@@ -18,15 +19,18 @@ import java.util.stream.Collectors;
 public class StFileDbServImpl extends BaseServImpl<StFileDb, Long, StFileDbDao> implements StFileDbServ {
 
   private static final String IMAGE_TYPE = "image";
+  private final JwtUtils jwtUtils;
 
-  public StFileDbServImpl(StFileDbDao repository) {
+  public StFileDbServImpl(StFileDbDao repository, JwtUtils jwtUtils) {
     super(repository);
+    this.jwtUtils = jwtUtils;
   }
 
   @Override
-  public void storeOne(String symb, LocalDateTime c8tDtm, MultipartFile multipartFile) {
+  public void storeOne(Long userId, String symb, LocalDateTime c8tDtm, MultipartFile multipartFile) {
     try {
       StFileDb stFileDb = StFileDb.builder()
+              .userId(userId)
               .symb(symb)
               .c8tDtm(c8tDtm)
               .dbFileNm(multipartFile.getOriginalFilename())
@@ -40,14 +44,16 @@ public class StFileDbServImpl extends BaseServImpl<StFileDb, Long, StFileDbDao> 
 
   @Override
   public void storeAll(String symb, LocalDateTime c8tDtm, MultipartFile[] multipartFile) {
+    Long userId = jwtUtils.getUserIdFromAuthentication();
     Arrays.stream(multipartFile).forEach(file -> {
-      this.storeOne(symb, c8tDtm, file);
+      this.storeOne(userId, symb, c8tDtm, file);
     });
   }
 
   @Override
   public List<StFileVo> findAllActiveDbFile(String symb, LocalDateTime c8tDtm) {
-    return super.getRepository().findAllBySymbAndC8tDtm(symb, c8tDtm)
+    return super.getRepository()
+            .findAllByUserIdAndSymbAndC8tDtm(jwtUtils.getUserIdFromAuthentication(), symb, c8tDtm)
             .stream().map(dbFile -> {
               String base64ImgStr = null;
               if (IMAGE_TYPE.equals(dbFile.getDbFileTy().substring(0, 5))) {

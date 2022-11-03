@@ -15,7 +15,5 @@ public interface StEntryServ extends BaseServ<StEntry, Long> {
 
   List<StEntryVo> getAllActiveEntry();
 
-  List<StEntry> getAllOldEntry();
-
-  int updateDeleteTimeBySymbAndC8tDtm(String symb, LocalDateTime c8tDtm);
+  int updateDeleteTimeByUserIdAndSymbAndC8tDtm(String symb, LocalDateTime c8tDtm);
 }

@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface StFileFdDao extends JpaRepository<StFileFd, Long> {
 
-  List<StFileFd> findAllBySymbAndC8tDtm(String symb, LocalDateTime c8tDtm);
+  List<StFileFd> findAllByUserIdAndSymbAndC8tDtm(Long userId, String symb, LocalDateTime c8tDtm);
 }

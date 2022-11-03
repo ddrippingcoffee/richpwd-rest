@@ -9,6 +9,7 @@ import rich.pwd.bean.po.ComInfo;
 import rich.pwd.bean.po.StEntry;
 import rich.pwd.bean.vo.StEntryVo;
 import rich.pwd.bean.vo.StFileVo;
+import rich.pwd.config.jwt.JwtUtils;
 import rich.pwd.repo.StEntryDao;
 import rich.pwd.serv.intf.ComInfoServ;
 import rich.pwd.serv.intf.StEntryServ;
@@ -22,18 +23,21 @@ import java.util.stream.Collectors;
 @Service
 public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> implements StEntryServ {
 
+  private final JwtUtils jwtUtils;
   private final ComInfoServ comInfoServ;
   private final StFileDbServ stFileDbServ;
   private final StFileFdServ stFileFdServ;
 
   private final ObjectMapper objectMapper;
 
-  public StEntryServImpl(StEntryDao repository,
+  public StEntryServImpl(JwtUtils jwtUtils,
+                         StEntryDao repository,
                          ComInfoServ comInfoServ,
                          StFileDbServ stFileDbServ,
                          StFileFdServ stFileFdServ,
                          ObjectMapper objectMapper) {
     super(repository);
+    this.jwtUtils = jwtUtils;
     this.comInfoServ = comInfoServ;
     this.stFileDbServ = stFileDbServ;
     this.stFileFdServ = stFileFdServ;
@@ -51,6 +55,7 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
+    entry.setUserId(jwtUtils.getUserIdFromAuthentication());
     entry.setC8tDtm(LocalDateTime.now());
     this.save(entry);
     if (null != fileDbs) {
@@ -65,7 +70,7 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
   @Override
   public List<StEntryVo> getAllActiveEntry() {
     return super.getRepository()
-            .findAllByDelDtmIsNullOrderByC8tDtmDesc()
+            .findAllByUserIdAndDelDtmIsNullOrderByC8tDtmDesc(jwtUtils.getUserIdFromAuthentication())
             .stream().map(entry -> {
               ComInfo comInfo = comInfoServ.findOneBySymb(entry.getSymb());
               List<StFileVo> fileDbVos = stFileDbServ.findAllActiveDbFile(entry.getSymb(), entry.getC8tDtm());
@@ -81,13 +86,12 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
   }
 
   @Override
-  public List<StEntry> getAllOldEntry() {
-    return super.getRepository().findAllByDelDtmIsNotNullOrderByDelDtmDesc();
-  }
-
-  @Override
   @Transactional
-  public int updateDeleteTimeBySymbAndC8tDtm(String symb, LocalDateTime c8tDtm) {
-    return super.getRepository().updateDeleteTimeBySymbAndC8tDtm(symb, c8tDtm, LocalDateTime.now());
+  public int updateDeleteTimeByUserIdAndSymbAndC8tDtm(String symb, LocalDateTime c8tDtm) {
+    return super.getRepository().updateDeleteTimeByUserIdAndSymbAndC8tDtm(
+            jwtUtils.getUserIdFromAuthentication(),
+            symb,
+            c8tDtm,
+            LocalDateTime.now());
   }
 }
