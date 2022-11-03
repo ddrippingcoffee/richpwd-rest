@@ -47,6 +47,7 @@ public class StDtl implements Serializable {
 
   @ManyToOne(cascade = {}, targetEntity = StEntry.class, optional = false)
   @JoinColumns({
+          @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID"),
           @JoinColumn(name = "SYMB", referencedColumnName = "SYMB"),
           @JoinColumn(name = "C8T_DTM", referencedColumnName = "C8T_DTM")
   })

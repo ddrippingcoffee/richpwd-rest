@@ -28,6 +28,12 @@ public class StEntry implements Serializable {
   @Column(name = "UID")
   private Long uid;
   /**
+   * User 代號
+   */
+  @NotNull
+  @Column(name = "USER_ID")
+  private Long userId;
+  /**
    * Stock Symbol 股市代號
    */
   @NotNull

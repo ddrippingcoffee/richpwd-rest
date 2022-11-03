@@ -24,6 +24,10 @@ public class StFileFd {
   private Long uid;
 
   @NotNull
+  @Column(name = "USER_ID")
+  private Long userId;
+
+  @NotNull
   @Column(name = "SYMB")
   private String symb;
 
