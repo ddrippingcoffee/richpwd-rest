@@ -10,7 +10,7 @@ public class RefreshToken {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private long id;
 
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", referencedColumnName = "id")
   private User user;
 

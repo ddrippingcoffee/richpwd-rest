@@ -27,7 +27,7 @@ public class RefreshTokenService {
   }
 
   public Optional<RefreshToken> findByUserId(Long userId) {
-    return refreshTokenDao.findByUser(userDao.findById(userId).get());
+    return refreshTokenDao.findByUserId(userId);
   }
 
   public Optional<RefreshToken> findByToken(String token) {
