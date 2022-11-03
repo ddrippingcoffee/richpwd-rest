@@ -45,6 +45,8 @@
         <appender-ref ref="RollingFile"/>
         <appender-ref ref="Console"/>
     </root>
+<!--    <logger name="org.hibernate.SQL" level="debug"/>-->
+<!--    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="trace"/>-->
 
     <!-- LOG "com.baeldung*" at TRACE level -->
     <!--     <logger name="com.baeldung" level="trace" additivity="false">
