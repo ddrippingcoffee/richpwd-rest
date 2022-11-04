@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rich.pwd.config.jwt.bean.po.RefreshToken;
-import rich.pwd.config.YmlProperties;
+import rich.pwd.config.AppProperties;
 import rich.pwd.config.jwt.ex.TokenRefreshException;
 import rich.pwd.config.jwt.repo.RefreshTokenDao;
 import rich.pwd.config.jwt.repo.UserDao;
@@ -37,7 +37,7 @@ public class RefreshTokenService {
     RefreshToken refreshToken = new RefreshToken();
 
     refreshToken.setUser(userDao.findById(userId).get());
-    refreshToken.setExpiryDate(Instant.now().plusSeconds(YmlProperties.RefreshTokenDurationSecond));
+    refreshToken.setExpiryDate(Instant.now().plusSeconds(AppProperties.RefreshTokenDurationSecond));
     refreshToken.setToken(UUID.randomUUID().toString());
 
     refreshToken = refreshTokenDao.save(refreshToken);

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import rich.pwd.config.YmlProperties;
+import rich.pwd.config.AppProperties;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -34,13 +34,13 @@ public class JwtUtils {
     return Jwts.builder()
             .setSubject(username)
             .setIssuedAt(Date.from(zdt.toInstant()))
-            .setExpiration(Date.from(zdt.plusSeconds(YmlProperties.JwtExpirationSecond).toInstant()))
-            .signWith(SignatureAlgorithm.HS512, YmlProperties.JwtSecret)
+            .setExpiration(Date.from(zdt.plusSeconds(AppProperties.JwtExpirationSecond).toInstant()))
+            .signWith(SignatureAlgorithm.HS512, AppProperties.JwtSecret)
             .compact();
   }
 
   public String getUsernameFromJwtToken(String token) {
-    return Jwts.parser().setSigningKey(YmlProperties.JwtSecret).parseClaimsJws(token).getBody().getSubject();
+    return Jwts.parser().setSigningKey(AppProperties.JwtSecret).parseClaimsJws(token).getBody().getSubject();
   }
 
   public Long getUserIdFromAuthentication() {
@@ -51,7 +51,7 @@ public class JwtUtils {
 
   public JwtTokenEnum validateJwtToken(String authToken) {
     try {
-      Jwts.parser().setSigningKey(YmlProperties.JwtSecret).parseClaimsJws(authToken);
+      Jwts.parser().setSigningKey(AppProperties.JwtSecret).parseClaimsJws(authToken);
     } catch (SignatureException e) {
       logger.error("Invalid JWT signature: {}", e.getMessage());
       return JwtTokenEnum.SIGNATURE_EX;

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import rich.pwd.config.jwt.bean.dto.ErrorMessage;
-import rich.pwd.config.YmlProperties;
+import rich.pwd.config.AppProperties;
 import rich.pwd.ex.ResourceNotFoundException;
 import rich.pwd.config.jwt.ex.TokenRefreshException;
 
@@ -46,8 +46,8 @@ public class ContrAdvice {
   }
 
   private final String FILE_TOO_LARGE_MESSAGE = "Error:" +
-          " Each file max size: " + YmlProperties.MaxUploadSizePerFile +
-          ", Request file max size: " + YmlProperties.MaxUploadSizePerRequest;
+          " Each file max size: " + AppProperties.MaxUploadSizePerFile +
+          ", Request file max size: " + AppProperties.MaxUploadSizePerRequest;
 
   @ExceptionHandler(value = MaxUploadSizeExceededException.class)
   @ResponseStatus(HttpStatus.EXPECTATION_FAILED)

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class YmlProperties {
+public class AppProperties {
 
   public static String JwtSecret;
   public static int JwtExpirationSecond;
@@ -15,7 +15,7 @@ public class YmlProperties {
   public static String MaxUploadSizePerRequest;
 
   @Autowired
-  public YmlProperties(@Value("${richpwd.app.jwtSecret}") String jwtSecret,
+  public AppProperties(@Value("${richpwd.app.jwtSecret}") String jwtSecret,
                        @Value("${richpwd.app.jwtExpirationSec}") int jwtExpirationSec,
                        @Value("${richpwd.app.jwtRefreshExpirationSec}") Long refreshTokenDurationSec,
                        @Value("${spring.servlet.multipart.max-file-size}") String maxSizePerFile,
