@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rich.pwd.config.jwt.bean.po.RefreshToken;
-import rich.pwd.config.jwt.bean.po.User;
 import rich.pwd.config.YmlProperties;
 import rich.pwd.config.jwt.ex.TokenRefreshException;
 import rich.pwd.config.jwt.repo.RefreshTokenDao;
@@ -56,7 +55,7 @@ public class RefreshTokenService {
   }
 
   @Transactional
-  public int deleteByUser(User user) {
-    return refreshTokenDao.deleteByUser(user);
+  public int deleteByUserId(Long userId) {
+    return refreshTokenDao.deleteByUserId(userId);
   }
 }

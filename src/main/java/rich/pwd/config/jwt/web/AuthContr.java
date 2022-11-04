@@ -76,11 +76,9 @@ public class AuthContr {
             .map(item -> item.getAuthority())
             .collect(Collectors.toList());
 
-    // 刪除舊 token
-    Optional<RefreshToken> user = refreshTokenService.findByUserId(userDetails.getId());
-    if (user.isPresent()) {
-      refreshTokenService.deleteByUser(user.get().getUser());
-    }
+    // 不管 DB 是否有舊 Token 均執行刪除
+    refreshTokenService.deleteByUserId(userDetails.getId());
+
     RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
     return ResponseEntity.ok(new JwtResponse(
@@ -159,8 +157,7 @@ public class AuthContr {
   public ResponseEntity<?> signOutUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-    Optional<RefreshToken> user = refreshTokenService.findByUserId(userDetails.getId());
-    refreshTokenService.deleteByUser(user.get().getUser());
+    refreshTokenService.deleteByUserId(userDetails.getId());
     return ResponseEntity.ok(new MessageResponse("sign out successful!"));
   }
 }
