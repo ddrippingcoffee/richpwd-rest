@@ -1,0 +1,41 @@
+	# 顯示 SQL 執行 log (不須再設定 show_sql)
+logging.level.org.hibernate.SQL=debug
+	# Hibernate ID 生成 log
+logging.level.org.hibernate.id=debug
+	# 顯示 SQL 執行參數
+	# binding parameter [1] as [BIGINT] - [279]
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+	# SQL 執行後取得返回值
+	# extracted value ([id1_8_] : [BIGINT]) - [5]
+logging.level.org.hibernate.type.descriptor.sql=trace
+	# 請求參數
+logging.level.org.hibernate.type=debug
+	# 快取
+logging.level.org.hibernate.cache=debug
+	# 統計 Hibernate 執行狀態
+logging.level.org.hibernate.stat=debug
+	# 查看所有快取操作
+logging.level.org.hibernate.event.internal=trace
+logging.level.org.springframework.cache=trace
+	# Hibernate 監控指標 log
+logging.level.org.hibernate.engine.internal.StatisticalLoggingSessionEventListener=DEBUG
+
+	### 連線池相關 log
+	# 連線池狀態 log
+logging.level.com.zaxxer.hikari=TRACE
+	# 開啟 debug 可以看到 AvailableSettings 預設配置
+logging.level.org.hibernate.cfg=debug
+	# Kikari 資料配置 log
+logging.level.com.zaxxer.hikari.HikariConfig=TRACE
+
+	### 查看 Transaction 相關 log
+logging.level.org.springframework.orm.jpa=DEBUG
+logging.level.org.springframework.transaction=TRACE
+logging.level.org.hibernate.engine.transaction.internal.TransactionImpl=DEBUG
+
+	### 分析 connect 以及 orm 和 data 的處理過程 log
+logging.level.org.springframework.data=trace
+logging.level.org.springframework.orm=trace
+
+	### 分析 Hibernate 的 Session 執行 log
+spring.jpa.properties.hibernate.generate_statistics=true
