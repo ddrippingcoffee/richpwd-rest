@@ -9,6 +9,7 @@ import rich.pwd.bean.po.ComInfo;
 import rich.pwd.bean.po.StEntry;
 import rich.pwd.bean.vo.StEntryVo;
 import rich.pwd.bean.vo.StFileVo;
+import rich.pwd.config.AppProperties;
 import rich.pwd.config.jwt.JwtUtils;
 import rich.pwd.ex.BadRequestException;
 import rich.pwd.repo.StEntryDao;
@@ -18,7 +19,9 @@ import rich.pwd.serv.intf.StFileDbServ;
 import rich.pwd.serv.intf.StFileFdServ;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,8 +74,8 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
   }
 
   @Override
-  public List<StEntryVo> getAllActiveEntry() {
-    return super.getRepository()
+  public Map<String, Object> getAllActiveEntry() {
+    List<StEntryVo> stEntryList = super.getRepository()
             .findAllByUserIdAndDelDtmIsNullOrderByC8tDtmDesc(jwtUtils.getUserIdFromAuthentication())
             .stream().map(entry -> {
               ComInfo comInfo = comInfoServ.findOneBySymb(entry.getSymb());
@@ -86,6 +89,12 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
                       .fileDbVos(fileDbVos)
                       .fileFdVos(fileFdVos).build();
             }).collect(Collectors.toList());
+
+    Map<String, Object> resultMap = new HashMap<>(16);
+    resultMap.put("stEntryList", stEntryList);
+    resultMap.put("limitPerFile", AppProperties.MaxUploadSizePerFile);
+    resultMap.put("limitPerReq", AppProperties.MaxUploadSizePerRequest);
+    return resultMap;
   }
 
   @Override

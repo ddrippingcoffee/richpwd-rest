@@ -2,10 +2,9 @@ package rich.pwd.serv.intf;
 
 import org.springframework.web.multipart.MultipartFile;
 import rich.pwd.bean.po.StEntry;
-import rich.pwd.bean.vo.StEntryVo;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Map;
 
 public interface StEntryServ extends BaseServ<StEntry, Long> {
 
@@ -13,7 +12,7 @@ public interface StEntryServ extends BaseServ<StEntry, Long> {
                            MultipartFile[] fileDbs,
                            MultipartFile[] fileFds);
 
-  List<StEntryVo> getAllActiveEntry();
+  Map<String, Object> getAllActiveEntry();
 
   int updateDeleteTimeByUserIdAndSymbAndC8tDtm(String symb, LocalDateTime c8tDtm);
 }
