@@ -10,6 +10,7 @@ import rich.pwd.bean.po.StEntry;
 import rich.pwd.bean.vo.StEntryVo;
 import rich.pwd.bean.vo.StFileVo;
 import rich.pwd.config.jwt.JwtUtils;
+import rich.pwd.ex.BadRequestException;
 import rich.pwd.repo.StEntryDao;
 import rich.pwd.serv.intf.ComInfoServ;
 import rich.pwd.serv.intf.StEntryServ;
@@ -55,6 +56,8 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
+    ckFrontendData(entry);
+
     entry.setUserId(jwtUtils.getUserIdFromAuthentication());
     entry.setC8tDtm(LocalDateTime.now());
     this.save(entry);
@@ -93,5 +96,29 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
             symb,
             c8tDtm,
             LocalDateTime.now());
+  }
+
+  private void ckFrontendData(StEntry entry) {
+    if ("".equals(entry.getSymb())) {
+      throw new BadRequestException("股市代號未填");
+    }
+    entry.getStDtlList().forEach(dtl -> {
+      if ("".equals(dtl.getDtlTy())) {
+        throw new BadRequestException("筆記類型未填");
+      }
+      if ("date".equals(dtl.getDtlTy())) {
+        if ("".equals(dtl.getDtlBrf()) || "".equals(dtl.getDtlInfo())) {
+          throw new BadRequestException("日期 Brief 及 Information 未填");
+        }
+      }
+      if ("link".equals(dtl.getDtlTy())) {
+        if ("".equals(dtl.getDtlBrf())) {
+          throw new BadRequestException("連結 Brief 未填");
+        }
+        if (!dtl.getDtlInfo().startsWith("http")) {
+          throw new BadRequestException("連結格式不正確");
+        }
+      }
+    });
   }
 }

@@ -6,10 +6,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
-import rich.pwd.config.jwt.bean.dto.ErrorMessage;
 import rich.pwd.config.AppProperties;
-import rich.pwd.ex.ResourceNotFoundException;
+import rich.pwd.config.jwt.bean.dto.ErrorMessage;
 import rich.pwd.config.jwt.ex.TokenRefreshException;
+import rich.pwd.ex.BadRequestException;
+import rich.pwd.ex.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
 
@@ -56,6 +57,16 @@ public class ContrAdvice {
             HttpStatus.EXPECTATION_FAILED.value(),
             LocalDateTime.now(),
             FILE_TOO_LARGE_MESSAGE,
+            request.getDescription(false));
+  }
+
+  @ExceptionHandler(value = BadRequestException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorMessage handleBadRequestException(BadRequestException ex, WebRequest request) {
+    return new ErrorMessage(
+            HttpStatus.BAD_REQUEST.value(),
+            LocalDateTime.now(),
+            ex.getMessage(),
             request.getDescription(false));
   }
 }
