@@ -1,5 +1,6 @@
 package rich.pwd.serv;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -16,6 +17,15 @@ public class ComInfoServImpl extends BaseServImpl<ComInfo, Long, ComInfoDao> imp
 
   public ComInfoServImpl(ComInfoDao repository) {
     super(repository);
+  }
+
+  @Override
+  public void store(ComInfo comInfo) {
+    try {
+      super.getRepository().save(comInfo);
+    } catch (DataIntegrityViolationException ex) {
+      throw new RuntimeException(ex.getMostSpecificCause().getMessage());
+    }
   }
 
   @Override

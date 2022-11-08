@@ -1,12 +1,12 @@
 package rich.pwd.bean.po;
 
-import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "COM_INFO")
@@ -26,8 +26,7 @@ public class ComInfo {
   /**
    * Stock Symbol 股市代號
    */
-
-  @NotNull
+  @NotEmpty(message = "股市代號不得為空")
   @Column(name = "SYMB", unique = true)
   private String symb;
   /**

@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface ComInfoServ extends BaseServ<ComInfo, Long> {
 
+  void store(ComInfo comInfo);
+
   ComInfo findOneBySymb(String symb);
 
   ComInfo findOneByComNm(String nm);

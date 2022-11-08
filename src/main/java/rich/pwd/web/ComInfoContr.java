@@ -5,10 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import rich.pwd.config.jwt.bean.payload.response.MessageResponse;
 import rich.pwd.bean.po.ComInfo;
+import rich.pwd.config.jwt.bean.payload.response.MessageResponse;
 import rich.pwd.ex.ResourceNotFoundException;
 import rich.pwd.serv.intf.ComInfoServ;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("cominfo")
@@ -24,9 +26,9 @@ public class ComInfoContr {
 
   @PostMapping("/")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<?> save(@RequestBody ComInfo comInfo) {
+  public ResponseEntity<?> save(@Valid @RequestBody ComInfo comInfo) {
     // 自增主鍵會自動填入
-    comInfoServ.save(comInfo);
+    comInfoServ.store(comInfo);
     return new ResponseEntity<>(null, HttpStatus.CREATED);
   }
 
