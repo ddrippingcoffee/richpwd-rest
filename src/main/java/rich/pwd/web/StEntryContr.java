@@ -18,6 +18,7 @@ import rich.pwd.serv.intf.StFileDbServ;
 import rich.pwd.serv.intf.StFileFdServ;
 import rich.pwd.util.Key;
 
+import javax.validation.Valid;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -42,10 +43,10 @@ public class StEntryContr {
   }
 
   @PostMapping("/stores")
-  public ResponseEntity<?> storeAll(@RequestParam(value = "entryStr", required = true) String entryStr,
+  public ResponseEntity<?> storeAll(@Valid @RequestPart(value = "entryJsonStr", required = true) StEntry entry,
                                     @RequestParam(value = "fileDbs", required = false) MultipartFile[] fileDbs,
                                     @RequestParam(value = "fileFds", required = false) MultipartFile[] fileFds) {
-    return new ResponseEntity<>(stEntryServ.c8tStEntry(entryStr, fileDbs, fileFds), HttpStatus.CREATED);
+    return new ResponseEntity<>(stEntryServ.c8tStEntry(entry, fileDbs, fileFds), HttpStatus.CREATED);
   }
 
   @GetMapping("/act")

@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface StEntryServ extends BaseServ<StEntry, Long> {
 
-  LocalDateTime c8tStEntry(String entryStr,
+  LocalDateTime c8tStEntry(StEntry entry,
                            MultipartFile[] fileDbs,
                            MultipartFile[] fileFds);
 

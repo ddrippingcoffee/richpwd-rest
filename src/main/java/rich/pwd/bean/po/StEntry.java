@@ -7,7 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,19 +31,17 @@ public class StEntry implements Serializable {
   /**
    * User 代號
    */
-  @NotNull
   @Column(name = "USER_ID")
   private Long userId;
   /**
    * Stock Symbol 股市代號
    */
-  @NotNull
+  @NotEmpty(message = "股市代號必填")
   @Column(name = "SYMB")
   private String symb;
   /**
    * 建立時間
    */
-  @NotNull
   @Column(name = "C8T_DTM")
   private LocalDateTime c8tDtm;
   /**
@@ -53,6 +52,7 @@ public class StEntry implements Serializable {
   /**
    * 個股註記
    */
+  @Valid
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, mappedBy = "stEntry")
   @JsonManagedReference
   private List<StDtl> stDtlList;

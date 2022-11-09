@@ -1,6 +1,7 @@
 package rich.pwd.config.advice;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,6 +17,8 @@ import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class ContrAdvice {
+
+  private static final StringBuffer ERROR_STRING_BUFFER = new StringBuffer(16);
 
   /*
     @RestControllerAdvice
@@ -63,10 +66,31 @@ public class ContrAdvice {
   @ExceptionHandler(value = BadRequestException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorMessage handleBadRequestException(BadRequestException ex, WebRequest request) {
+    ERROR_STRING_BUFFER.setLength(0);
+    ERROR_STRING_BUFFER.append("ERROR: ");
+    ERROR_STRING_BUFFER.append(System.lineSeparator());
+    ERROR_STRING_BUFFER.append(ex.getMessage());
     return new ErrorMessage(
             HttpStatus.BAD_REQUEST.value(),
             LocalDateTime.now(),
-            ex.getMessage(),
+            ERROR_STRING_BUFFER.toString(),
+            request.getDescription(false));
+  }
+
+  @ExceptionHandler(value = MethodArgumentNotValidException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorMessage handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {
+    ERROR_STRING_BUFFER.setLength(0);
+    ERROR_STRING_BUFFER.append("ERROR: ");
+    ex.getFieldErrors().forEach(err -> {
+      ERROR_STRING_BUFFER.append(System.lineSeparator());
+      ERROR_STRING_BUFFER.append(err.getField()).append(" : ");
+      ERROR_STRING_BUFFER.append(err.getDefaultMessage());
+    });
+    return new ErrorMessage(
+            HttpStatus.BAD_REQUEST.value(),
+            LocalDateTime.now(),
+            ERROR_STRING_BUFFER.toString(),
             request.getDescription(false));
   }
 }

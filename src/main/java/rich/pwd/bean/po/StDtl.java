@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
 @Entity
@@ -26,7 +26,7 @@ public class StDtl implements Serializable {
   /**
    * 註記類型
    */
-  @NotNull
+  @NotEmpty(message = "註記類型必填")
   @Column(name = "DTL_TY")
   private String dtlTy;
   /**
