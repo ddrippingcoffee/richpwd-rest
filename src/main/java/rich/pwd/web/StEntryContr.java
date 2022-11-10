@@ -6,6 +6,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rich.pwd.bean.po.StEntry;
@@ -19,6 +20,7 @@ import rich.pwd.serv.intf.StFileFdServ;
 import rich.pwd.util.Key;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -28,6 +30,8 @@ import java.util.Objects;
 @RequestMapping("entry")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class StEntryContr {
+
+  private static final String IMAGE_TYPE = "image";
 
   private final StEntryServ stEntryServ;
   private final StFileDbServ stFileDbServ;
@@ -95,5 +99,33 @@ public class StEntryContr {
     return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
             .body(resource);
+  }
+
+  @GetMapping("/filedb64/{uid}")
+  public ResponseEntity<?> getFileDbImg64(@PathVariable String uid) {
+    StFileDb fileDb = stFileDbServ.findById(Long.parseLong(uid)).orElseThrow();
+    String base64ImgStr = null;
+    if (IMAGE_TYPE.equals(fileDb.getDbFileTy().substring(0, 5))) {
+      base64ImgStr = "data:" + fileDb.getDbFileTy() + ";base64," +
+              Base64Utils.encodeToString(fileDb.getDbFileData());
+    }
+    return ResponseEntity.ok().body(base64ImgStr);
+  }
+
+  @GetMapping("/filefd64/{uid}")
+  public ResponseEntity<?> getFileFdImg64(@PathVariable String uid) {
+    StFileFd fileFd = stFileFdServ.findById(Long.parseLong(uid)).orElseThrow();
+    Path file = Key.RESOURCES_FILE_FOLDER.resolve(fileFd.getFdFileNm());
+    String base64ImgStr = null;
+    try {
+      if (IMAGE_TYPE.equals(fileFd.getFdFileTy().substring(0, 5))) {
+        Resource resource = new UrlResource(file.toUri());
+        base64ImgStr = "data:" + fileFd.getFdFileTy() + ";base64," +
+                Base64Utils.encodeToString(resource.getInputStream().readAllBytes());
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    return ResponseEntity.ok().body(base64ImgStr);
   }
 }

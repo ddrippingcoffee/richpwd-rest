@@ -1,8 +1,8 @@
 package rich.pwd.serv.intf;
 
 import org.springframework.web.multipart.MultipartFile;
+import rich.pwd.bean.dto.proj.StFileDbProj;
 import rich.pwd.bean.po.StFileDb;
-import rich.pwd.bean.vo.StFileVo;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,5 +13,5 @@ public interface StFileDbServ extends BaseServ<StFileDb, Long> {
 
   void storeAll(String symb, LocalDateTime c8tDtm, MultipartFile[] multipartFile);
 
-  List<StFileVo> findAllActiveDbFile(String symb, LocalDateTime c8tDtm);
+  List<StFileDbProj> findAllActiveDbFileInfo(String symb, LocalDateTime c8tDtm);
 }

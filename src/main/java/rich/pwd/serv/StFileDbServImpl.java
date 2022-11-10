@@ -1,10 +1,9 @@
 package rich.pwd.serv;
 
 import org.springframework.stereotype.Service;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
+import rich.pwd.bean.dto.proj.StFileDbProj;
 import rich.pwd.bean.po.StFileDb;
-import rich.pwd.bean.vo.StFileVo;
 import rich.pwd.config.jwt.JwtUtils;
 import rich.pwd.repo.StFileDbDao;
 import rich.pwd.serv.intf.StFileDbServ;
@@ -13,7 +12,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class StFileDbServImpl extends BaseServImpl<StFileDb, Long, StFileDbDao> implements StFileDbServ {
@@ -51,24 +49,8 @@ public class StFileDbServImpl extends BaseServImpl<StFileDb, Long, StFileDbDao> 
   }
 
   @Override
-  public List<StFileVo> findAllActiveDbFile(String symb, LocalDateTime c8tDtm) {
+  public List<StFileDbProj> findAllActiveDbFileInfo(String symb, LocalDateTime c8tDtm) {
     return super.getRepository()
-            .findAllByUserIdAndSymbAndC8tDtm(jwtUtils.getUserIdFromAuthentication(), symb, c8tDtm)
-            .stream().map(dbFile -> {
-              String base64ImgStr = null;
-              if (IMAGE_TYPE.equals(dbFile.getDbFileTy().substring(0, 5))) {
-                base64ImgStr = "data:" +
-                        dbFile.getDbFileTy() +
-                        ";base64," +
-                        Base64Utils.encodeToString(dbFile.getDbFileData());
-              }
-              return StFileVo.builder()
-                      .fileUid(String.valueOf(dbFile.getUid()))
-                      .name(dbFile.getDbFileNm())
-                      .type(dbFile.getDbFileTy())
-                      .size(dbFile.getDbFileData().length)
-                      .base64ImgStr(base64ImgStr)
-                      .build();
-            }).collect(Collectors.toList());
+            .findAllByUserIdAndSymbAndC8tDtm(jwtUtils.getUserIdFromAuthentication(), symb, c8tDtm);
   }
 }

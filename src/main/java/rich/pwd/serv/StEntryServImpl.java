@@ -3,10 +3,11 @@ package rich.pwd.serv;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import rich.pwd.bean.dto.proj.StFileDbProj;
+import rich.pwd.bean.dto.proj.StFileFdProj;
 import rich.pwd.bean.po.ComInfo;
 import rich.pwd.bean.po.StEntry;
 import rich.pwd.bean.vo.StEntryVo;
-import rich.pwd.bean.vo.StFileVo;
 import rich.pwd.config.AppProperties;
 import rich.pwd.config.jwt.JwtUtils;
 import rich.pwd.ex.BadRequestException;
@@ -78,19 +79,25 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
 
   @Override
   public Map<String, Object> getAllActiveEntry() {
+    List<ComInfo> comInfoList = comInfoServ.findAll();
     List<StEntryVo> stEntryList = super.getRepository()
             .findAllByUserIdAndDelDtmIsNullOrderByC8tDtmDesc(jwtUtils.getUserIdFromAuthentication())
             .stream().map(entry -> {
-              ComInfo comInfo = comInfoServ.findOneBySymb(entry.getSymb());
-              List<StFileVo> fileDbVos = stFileDbServ.findAllActiveDbFile(entry.getSymb(), entry.getC8tDtm());
-              List<StFileVo> fileFdVos = stFileFdServ.findAllActiveFdFile(entry.getSymb(), entry.getC8tDtm());
+              ComInfo comInfo = comInfoList.stream()
+                      .filter(info -> info.getSymb().equals(entry.getSymb()))
+                      .findAny().orElseThrow();
+              List<StFileDbProj> fileDbInfoList = stFileDbServ
+                      .findAllActiveDbFileInfo(entry.getSymb(), entry.getC8tDtm());
+              List<StFileFdProj> fileFdInfoList = stFileFdServ
+                      .findAllActiveFdFileInfo(entry.getSymb(), entry.getC8tDtm());
               return StEntryVo.builder()
                       .stEntry(entry)
                       .comNm(comInfo.getComNm())
                       .comType(comInfo.getComType())
                       .comIndus(comInfo.getComIndus())
-                      .fileDbVos(fileDbVos)
-                      .fileFdVos(fileFdVos).build();
+                      .fileDbInfoList(fileDbInfoList)
+                      .fileFdInfoList(fileFdInfoList)
+                      .build();
             }).collect(Collectors.toList());
 
     Map<String, Object> resultMap = new HashMap<>(16);

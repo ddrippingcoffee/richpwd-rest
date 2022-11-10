@@ -2,6 +2,8 @@ package rich.pwd.bean.vo;
 
 import lombok.Builder;
 import lombok.Data;
+import rich.pwd.bean.dto.proj.StFileDbProj;
+import rich.pwd.bean.dto.proj.StFileFdProj;
 import rich.pwd.bean.po.StEntry;
 
 import java.util.List;
@@ -16,7 +18,6 @@ public class StEntryVo {
   private String comType;
   private String comIndus;
 
-  private List<StFileVo> fileDbVos;
-
-  private List<StFileVo> fileFdVos;
+  private List<StFileDbProj> fileDbInfoList;
+  private List<StFileFdProj> fileFdInfoList;
 }
