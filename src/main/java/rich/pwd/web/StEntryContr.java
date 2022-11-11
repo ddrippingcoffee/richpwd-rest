@@ -58,6 +58,11 @@ public class StEntryContr {
     return new ResponseEntity<>(stEntryServ.getAllActiveEntry(), HttpStatus.OK);
   }
 
+  @GetMapping("/old")
+  public ResponseEntity<?> getAllOldEntry() {
+    return new ResponseEntity<>(stEntryServ.getAllOldEntry(), HttpStatus.OK);
+  }
+
   @PutMapping("/")
   public ResponseEntity<?> updateEntryDeleteTime(@RequestBody StEntry entry) {
     try {

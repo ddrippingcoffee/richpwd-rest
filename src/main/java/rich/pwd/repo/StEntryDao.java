@@ -15,6 +15,8 @@ public interface StEntryDao extends JpaRepository<StEntry, Long> {
 
   List<StEntry> findAllByUserIdAndDelDtmIsNullOrderByC8tDtmDesc(Long userId);
 
+  List<StEntry> findAllByUserIdAndDelDtmIsNotNullOrderByDelDtmDesc(Long userId);
+
   @Modifying
   @Query("update StEntry entry set entry.delDtm = :delDtm  where entry.userId = :userId and entry.symb = :symb  and entry.c8tDtm = :c8tDtm")
   int updateDeleteTimeByUserIdAndSymbAndC8tDtm(@Param("userId") Long userId,

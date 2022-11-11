@@ -19,7 +19,6 @@ import rich.pwd.serv.intf.StFileDbServ;
 import rich.pwd.serv.intf.StFileFdServ;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -80,38 +79,46 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
 
   @Override
   public Map<String, Object> getAllActiveEntry() {
+    List<StEntry> stEntryList = super.getRepository()
+            .findAllByUserIdAndDelDtmIsNullOrderByC8tDtmDesc(jwtUtils.getUserIdFromAuthentication());
+    return Map.of("stEntryList", c8tEntryMiscData(stEntryList),
+            "limitPerFile", AppProperties.MaxUploadSizePerFile,
+            "limitPerReq", AppProperties.MaxUploadSizePerRequest);
+  }
+
+  @Override
+  public Map<String, Object> getAllOldEntry() {
+    List<StEntry> stEntryList = super.getRepository()
+            .findAllByUserIdAndDelDtmIsNotNullOrderByDelDtmDesc(jwtUtils.getUserIdFromAuthentication());
+    return Map.of("stEntryList", c8tEntryMiscData(stEntryList));
+  }
+
+  private List<StEntryVo> c8tEntryMiscData(List<StEntry> entryList) {
     List<ComInfo> comInfoList = comInfoServ.findAll();
-    List<StEntryVo> stEntryList = super.getRepository()
-            .findAllByUserIdAndDelDtmIsNullOrderByC8tDtmDesc(jwtUtils.getUserIdFromAuthentication())
-            .stream().map(entry -> {
-              List<StFileDbProj> fileDbInfoList = stFileDbServ
-                      .findAllActiveDbFileInfo(entry.getSymb(), entry.getC8tDtm());
-              List<StFileFdProj> fileFdInfoList = stFileFdServ
-                      .findAllActiveFdFileInfo(entry.getSymb(), entry.getC8tDtm());
-              StEntryVo entryVo = StEntryVo.builder()
-                      .stEntry(entry)
-                      .fileDbInfoList(fileDbInfoList)
-                      .fileFdInfoList(fileFdInfoList)
-                      .build();
-              Optional<ComInfo> comInfoOp = comInfoList.stream()
-                      .filter(info -> info.getSymb().equals(entry.getSymb()))
-                      .findAny();
-              comInfoOp.ifPresentOrElse(comInfo -> {
-                entryVo.setComNm(comInfo.getComNm());
-                entryVo.setComType(comInfo.getComType());
-                entryVo.setComIndus(comInfo.getComIndus());
-              }, () -> {
-                entryVo.setComNm("N.A.");
-                entryVo.setComType("N.A.");
-                entryVo.setComIndus("N.A.");
-              });
-              return entryVo;
-            }).collect(Collectors.toList());
-    Map<String, Object> resultMap = new HashMap<>(16);
-    resultMap.put("stEntryList", stEntryList);
-    resultMap.put("limitPerFile", AppProperties.MaxUploadSizePerFile);
-    resultMap.put("limitPerReq", AppProperties.MaxUploadSizePerRequest);
-    return resultMap;
+    return entryList.stream().map(entry -> {
+      List<StFileDbProj> fileDbInfoList = stFileDbServ
+              .findAllActiveDbFileInfo(entry.getSymb(), entry.getC8tDtm());
+      List<StFileFdProj> fileFdInfoList = stFileFdServ
+              .findAllActiveFdFileInfo(entry.getSymb(), entry.getC8tDtm());
+      StEntryVo entryVo = StEntryVo.builder()
+              .stEntry(entry)
+              .fileDbInfoList(fileDbInfoList)
+              .fileFdInfoList(fileFdInfoList)
+              .build();
+      Optional<ComInfo> comInfoOp = comInfoList.stream()
+              .filter(info -> info.getSymb().equals(entry.getSymb()))
+              .findAny();
+      comInfoOp.ifPresentOrElse(comInfo -> {
+        entryVo.setComNm(comInfo.getComNm());
+        entryVo.setComType(comInfo.getComType());
+        entryVo.setComIndus(comInfo.getComIndus());
+      }, () -> {
+        entryVo.setComNm("N.A.");
+        entryVo.setComType("N.A.");
+        entryVo.setComIndus("N.A.");
+      });
+      return entryVo;
+    }).collect(Collectors.toList());
   }
 
   @Override
