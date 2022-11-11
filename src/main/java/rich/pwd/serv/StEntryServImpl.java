@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -83,23 +84,29 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
     List<StEntryVo> stEntryList = super.getRepository()
             .findAllByUserIdAndDelDtmIsNullOrderByC8tDtmDesc(jwtUtils.getUserIdFromAuthentication())
             .stream().map(entry -> {
-              ComInfo comInfo = comInfoList.stream()
-                      .filter(info -> info.getSymb().equals(entry.getSymb()))
-                      .findAny().orElseThrow();
               List<StFileDbProj> fileDbInfoList = stFileDbServ
                       .findAllActiveDbFileInfo(entry.getSymb(), entry.getC8tDtm());
               List<StFileFdProj> fileFdInfoList = stFileFdServ
                       .findAllActiveFdFileInfo(entry.getSymb(), entry.getC8tDtm());
-              return StEntryVo.builder()
+              StEntryVo entryVo = StEntryVo.builder()
                       .stEntry(entry)
-                      .comNm(comInfo.getComNm())
-                      .comType(comInfo.getComType())
-                      .comIndus(comInfo.getComIndus())
                       .fileDbInfoList(fileDbInfoList)
                       .fileFdInfoList(fileFdInfoList)
                       .build();
+              Optional<ComInfo> comInfoOp = comInfoList.stream()
+                      .filter(info -> info.getSymb().equals(entry.getSymb()))
+                      .findAny();
+              comInfoOp.ifPresentOrElse(comInfo -> {
+                entryVo.setComNm(comInfo.getComNm());
+                entryVo.setComType(comInfo.getComType());
+                entryVo.setComIndus(comInfo.getComIndus());
+              }, () -> {
+                entryVo.setComNm("N.A.");
+                entryVo.setComType("N.A.");
+                entryVo.setComIndus("N.A.");
+              });
+              return entryVo;
             }).collect(Collectors.toList());
-
     Map<String, Object> resultMap = new HashMap<>(16);
     resultMap.put("stEntryList", stEntryList);
     resultMap.put("limitPerFile", AppProperties.MaxUploadSizePerFile);

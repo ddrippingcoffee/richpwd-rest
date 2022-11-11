@@ -71,6 +71,8 @@ public class StEntryContr {
     }
   }
 
+  /*
+    目前無使用
   @GetMapping("/filedb/{uid}")
   public ResponseEntity<?> downloadFileDb(@PathVariable String uid) {
     StFileDb fileDb = stFileDbServ.findById(Long.parseLong(uid)).orElseThrow();
@@ -84,6 +86,7 @@ public class StEntryContr {
             .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
             .body(fileDb.getDbFileData());
   }
+   */
 
   @GetMapping("/filefd/{uid}")
   public ResponseEntity<?> downloadFileFd(@PathVariable String uid) throws MalformedURLException {
