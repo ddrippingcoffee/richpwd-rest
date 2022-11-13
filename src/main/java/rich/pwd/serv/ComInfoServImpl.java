@@ -84,14 +84,6 @@ public class ComInfoServImpl extends BaseServImpl<ComInfo, Long, ComInfoDao> imp
   }
 
   @Override
-  public Slice<ComInfo> getAllByComIndusSlice(String indus, int page, int size, String desc) {
-    return super.getRepository().getAllByComIndusContaining(
-            indus,
-            PageRequest.of(page, size, "desc".equals(desc) ? Sort.Direction.DESC : Sort.Direction.ASC, "symb")
-    );
-  }
-
-  @Override
   @Transactional(
           timeout = 20,
           readOnly = false,

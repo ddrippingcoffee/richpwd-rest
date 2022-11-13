@@ -25,9 +25,6 @@ public interface ComInfoServ extends BaseServ<ComInfo, Long> {
 
   Page<ComInfo> findAllByComIndusPage(String indus, int page, int size, String desc);
 
-  @Deprecated
-  Slice<ComInfo> getAllByComIndusSlice(String indus, int page, int size, String desc);
-
   int deleteComInfoBySymb(String symb);
 
   void updateBySymb(String symb, ComInfo comInfo);

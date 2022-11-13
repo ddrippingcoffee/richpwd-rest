@@ -101,16 +101,6 @@ public class ComInfoContr {
             comInfoServ.findAllByComIndusPage(indus, page, size, desc), HttpStatus.OK);
   }
 
-  @GetMapping("/s/indus/sl")
-  public ResponseEntity<?> getAllByComIndusSlice(
-          @NotBlank(message = "產業別必填") @RequestParam String indus,
-          @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
-          @Min(value = 1, message = "最少 1 筆") @RequestParam int size,
-          @Pattern(regexp = "(^asc$|^desc$)", message = "排序輸入錯誤") @RequestParam String desc) {
-    return new ResponseEntity<>(
-            comInfoServ.getAllByComIndusSlice(indus, page, size, desc), HttpStatus.OK);
-  }
-
   @PutMapping("/{symb}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<?> updBySymb(@PathVariable String symb, @RequestBody ComInfo comInfo) {

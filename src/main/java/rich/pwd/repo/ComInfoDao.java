@@ -28,9 +28,6 @@ public interface ComInfoDao extends JpaRepository<ComInfo, Long> {
 
   Page<ComInfo> findAllByComIndusContaining(String indus, Pageable pageable);
 
-  @Deprecated
-  Slice<ComInfo> getAllByComIndusContaining(String indus, Pageable pageable);
-
   @Modifying
   int deleteComInfoBySymb(String symb);
 }
