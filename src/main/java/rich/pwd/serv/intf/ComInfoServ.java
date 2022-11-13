@@ -1,5 +1,8 @@
 package rich.pwd.serv.intf;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
+import rich.pwd.bean.dto.proj.ComInfoProj;
 import rich.pwd.bean.po.ComInfo;
 
 import java.util.List;
@@ -10,9 +13,20 @@ public interface ComInfoServ extends BaseServ<ComInfo, Long> {
 
   ComInfo findOneBySymb(String symb);
 
-  ComInfo findOneByComNm(String nm);
+  List<ComInfoProj> getComIndusList();
 
-  List<ComInfo> findAllByComIndus(String indus);
+  Slice<ComInfo> findAllByComNmSlice(String comNm, int page, int size, String desc);
+
+  Page<ComInfo> findAllByComMainPage(String comMain, int page, int size, String desc);
+
+  Page<ComInfo> findAllByComCotedPage(String comCoted, int page, int size, String desc);
+
+  Page<ComInfo> findAllByComCepPage(String comCep, int page, int size, String desc);
+
+  Page<ComInfo> findAllByComIndusPage(String indus, int page, int size, String desc);
+
+  @Deprecated
+  Slice<ComInfo> getAllByComIndusSlice(String indus, int page, int size, String desc);
 
   int deleteComInfoBySymb(String symb);
 

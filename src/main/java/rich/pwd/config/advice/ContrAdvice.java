@@ -13,6 +13,7 @@ import rich.pwd.config.jwt.ex.TokenRefreshException;
 import rich.pwd.ex.BadRequestException;
 import rich.pwd.ex.ResourceNotFoundException;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
@@ -86,6 +87,22 @@ public class ContrAdvice {
       ERROR_STRING_BUFFER.append(System.lineSeparator());
       ERROR_STRING_BUFFER.append(err.getField()).append(" : ");
       ERROR_STRING_BUFFER.append(err.getDefaultMessage());
+    });
+    return new ErrorMessage(
+            HttpStatus.BAD_REQUEST.value(),
+            LocalDateTime.now(),
+            ERROR_STRING_BUFFER.toString(),
+            request.getDescription(false));
+  }
+
+  @ExceptionHandler(value = ConstraintViolationException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorMessage handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
+    ERROR_STRING_BUFFER.setLength(0);
+    ERROR_STRING_BUFFER.append("ERROR: ");
+    ex.getConstraintViolations().forEach(v -> {
+      ERROR_STRING_BUFFER.append(System.lineSeparator());
+      ERROR_STRING_BUFFER.append(v.getMessageTemplate());
     });
     return new ErrorMessage(
             HttpStatus.BAD_REQUEST.value(),

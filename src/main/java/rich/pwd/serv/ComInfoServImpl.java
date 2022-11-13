@@ -1,10 +1,15 @@
 package rich.pwd.serv;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import rich.pwd.bean.dto.proj.ComInfoProj;
 import rich.pwd.bean.po.ComInfo;
 import rich.pwd.ex.ResourceNotFoundException;
 import rich.pwd.repo.ComInfoDao;
@@ -34,13 +39,56 @@ public class ComInfoServImpl extends BaseServImpl<ComInfo, Long, ComInfoDao> imp
   }
 
   @Override
-  public ComInfo findOneByComNm(String nm) {
-    return super.getRepository().findComInfoByComNm(nm);
+  public List<ComInfoProj> getComIndusList() {
+    return super.getRepository().findDistinctBy();
   }
 
   @Override
-  public List<ComInfo> findAllByComIndus(String indus) {
-    return super.getRepository().findComInfosByComIndus(indus);
+  public Slice<ComInfo> findAllByComNmSlice(String comNm, int page, int size, String desc) {
+    return super.getRepository().findAllByComNmContaining(
+            comNm,
+            PageRequest.of(page, size, "desc".equals(desc) ? Sort.Direction.DESC : Sort.Direction.ASC, "symb")
+    );
+  }
+
+  @Override
+  public Page<ComInfo> findAllByComMainPage(String comMain, int page, int size, String desc) {
+    return super.getRepository().findAllByComMainContaining(
+            comMain,
+            PageRequest.of(page, size, "desc".equals(desc) ? Sort.Direction.DESC : Sort.Direction.ASC, "symb")
+    );
+  }
+
+  @Override
+  public Page<ComInfo> findAllByComCotedPage(String comCoted, int page, int size, String desc) {
+    return super.getRepository().findAllByComCotedContaining(
+            comCoted,
+            PageRequest.of(page, size, "desc".equals(desc) ? Sort.Direction.DESC : Sort.Direction.ASC, "symb")
+    );
+  }
+
+  @Override
+  public Page<ComInfo> findAllByComCepPage(String comCep, int page, int size, String desc) {
+    return super.getRepository().findAllByComCepContaining(
+            comCep,
+            PageRequest.of(page, size, "desc".equals(desc) ? Sort.Direction.DESC : Sort.Direction.ASC, "symb")
+    );
+  }
+
+  @Override
+  public Page<ComInfo> findAllByComIndusPage(String indus, int page, int size, String desc) {
+    return super.getRepository().findAllByComIndusContaining(
+            indus,
+            PageRequest.of(page, size, "desc".equals(desc) ? Sort.Direction.DESC : Sort.Direction.ASC, "symb")
+    );
+  }
+
+  @Override
+  public Slice<ComInfo> getAllByComIndusSlice(String indus, int page, int size, String desc) {
+    return super.getRepository().getAllByComIndusContaining(
+            indus,
+            PageRequest.of(page, size, "desc".equals(desc) ? Sort.Direction.DESC : Sort.Direction.ASC, "symb")
+    );
   }
 
   @Override
