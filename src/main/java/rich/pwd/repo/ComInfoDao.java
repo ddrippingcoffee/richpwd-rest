@@ -18,6 +18,8 @@ public interface ComInfoDao extends JpaRepository<ComInfo, Long> {
 
   List<ComInfoProj> findDistinctBy();
 
+  Page<ComInfo> findAllBySymbContaining(String symb, Pageable pageable);
+
   Slice<ComInfo> findAllByComNmContaining(String comNm, Pageable pageable);
 
   Page<ComInfo> findAllByComMainContaining(String comMain, Pageable pageable);

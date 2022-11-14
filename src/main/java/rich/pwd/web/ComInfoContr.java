@@ -52,7 +52,17 @@ public class ComInfoContr {
     return new ResponseEntity<>(comInfoServ.getComIndusList(), HttpStatus.OK);
   }
 
-  @GetMapping("/s/nm")
+  @GetMapping("/s/pg/symb")
+  public ResponseEntity<?> findAllBySymbPage(
+          @NotBlank(message = "個股代號必填") @RequestParam String symb,
+          @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
+          @Min(value = 1, message = "最少 1 筆") @RequestParam int size,
+          @Pattern(regexp = "(^asc$|^desc$)", message = "排序輸入錯誤") @RequestParam String desc) {
+    return new ResponseEntity<>(
+            comInfoServ.findAllBySymbPage(symb, page, size, desc), HttpStatus.OK);
+  }
+
+  @GetMapping("/s/sl/nm")
   public ResponseEntity<?> findAllByComNmSlice(
           @NotBlank(message = "公司名必填") @RequestParam String comNm,
           @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
@@ -61,7 +71,7 @@ public class ComInfoContr {
     return new ResponseEntity<>(comInfoServ.findAllByComNmSlice(comNm, page, size, desc), HttpStatus.OK);
   }
 
-  @GetMapping("/s/main")
+  @GetMapping("/s/pg/main")
   public ResponseEntity<?> findAllByComMainPage(
           @NotBlank(message = "主要業務必填") @RequestParam String comMain,
           @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
@@ -71,7 +81,7 @@ public class ComInfoContr {
             comInfoServ.findAllByComMainPage(comMain, page, size, desc), HttpStatus.OK);
   }
 
-  @GetMapping("/s/coted")
+  @GetMapping("/s/pg/coted")
   public ResponseEntity<?> findAllByComCotedPage(
           @NotBlank(message = "相關產業必填") @RequestParam String comCoted,
           @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
@@ -81,7 +91,7 @@ public class ComInfoContr {
             comInfoServ.findAllByComCotedPage(comCoted, page, size, desc), HttpStatus.OK);
   }
 
-  @GetMapping("/s/cep")
+  @GetMapping("/s/pg/cep")
   public ResponseEntity<?> findAllByComCepPage(
           @NotBlank(message = "相關概念必填") @RequestParam String comCep,
           @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
@@ -91,7 +101,7 @@ public class ComInfoContr {
             comInfoServ.findAllByComCepPage(comCep, page, size, desc), HttpStatus.OK);
   }
 
-  @GetMapping("/s/indus/pg")
+  @GetMapping("/s/pg/indus")
   public ResponseEntity<?> findAllByComIndusPage(
           @NotBlank(message = "產業別必填") @RequestParam String indus,
           @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
