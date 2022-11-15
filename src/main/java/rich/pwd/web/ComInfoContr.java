@@ -32,8 +32,14 @@ public class ComInfoContr {
   @PostMapping("/")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<?> save(@Valid @RequestBody ComInfo comInfo) {
-    // 自增主鍵會自動填入
-    comInfoServ.store(comInfo);
+    try {
+      // 自增主鍵會自動填入
+      comInfoServ.store(comInfo);
+    } catch (RuntimeException ex) {
+      return ResponseEntity
+              .badRequest()
+              .body(new MessageResponse(ex.getMessage()));
+    }
     return new ResponseEntity<>(null, HttpStatus.CREATED);
   }
 
