@@ -113,7 +113,8 @@ public class ComInfoContr {
 
   @PutMapping("/{symb}")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<?> updBySymb(@PathVariable String symb, @RequestBody ComInfo comInfo) {
+  public ResponseEntity<?> updBySymb(@PathVariable String symb,
+                                     @Valid @RequestBody ComInfo comInfo) {
     try {
       comInfoServ.updateBySymb(symb, comInfo);
       return new ResponseEntity<>(HttpStatus.OK);

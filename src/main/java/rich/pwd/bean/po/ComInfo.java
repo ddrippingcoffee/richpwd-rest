@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "COM_INFO")
@@ -37,11 +38,13 @@ public class ComInfo {
   /**
    * 市場別
    */
+  @NotEmpty(message = "市場別必填")
   @Column(name = "COM_TYPE")
   private String comType;
   /**
    * Industry 產業別
    */
+  @Pattern(regexp = "^([^\\x00-\\xff]+|N/A)$", message = "產業別輸入錯誤")
   @Column(name = "COM_INDUS")
   private String comIndus;
   /**
