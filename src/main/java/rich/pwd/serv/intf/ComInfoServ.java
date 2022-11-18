@@ -15,6 +15,10 @@ public interface ComInfoServ extends BaseServ<ComInfo, Long> {
 
   List<ComInfoProj> getComIndusList();
 
+  List<ComInfo> findAllBySymbContaining(String symb);
+
+  List<ComInfo> findAllByComNmContaining(String comNm);
+
   Page<ComInfo> findAllBySymbPage(String symb, int page, int size, String desc);
 
   Slice<ComInfo> findAllByComNmSlice(String comNm, int page, int size, String desc);

@@ -1,5 +1,9 @@
 package rich.pwd.serv;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -91,6 +95,56 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
     List<StEntry> stEntryList = super.getRepository()
             .findAllByUserIdAndDelDtmIsNotNullOrderByDelDtmDesc(jwtUtils.getUserIdFromAuthentication());
     return Map.of("stEntryList", c8tEntryMiscData(stEntryList));
+  }
+
+  @Override
+  public Page<StEntry> findAllActiveEntryPage(int page, int size, String desc) {
+    return super.getRepository().findAllByUserIdAndDelDtmIsNull(
+            jwtUtils.getUserIdFromAuthentication(),
+            PageRequest.of(page, size, "desc".equals(desc) ? Sort.Direction.DESC : Sort.Direction.ASC, "c8tDtm")
+    );
+  }
+
+  @Override
+  public Page<StEntry> findAllOldEntryPage(int page, int size, String desc) {
+    return super.getRepository().findAllByUserIdAndDelDtmIsNotNull(
+            jwtUtils.getUserIdFromAuthentication(),
+            PageRequest.of(page, size, "desc".equals(desc) ? Sort.Direction.DESC : Sort.Direction.ASC, "delDtm")
+    );
+  }
+
+  @Override
+  public Map<String, Object> getEntryFileList(String symb, LocalDateTime c8tDtm) {
+    List<StFileDbProj> fileDbInfoList =
+            stFileDbServ.findAllActiveDbFileInfo(symb, c8tDtm);
+    List<StFileFdProj> fileFdInfoList =
+            stFileFdServ.findAllActiveFdFileInfo(symb, c8tDtm);
+    return Map.of("fileDbInfoList", fileDbInfoList,
+            "fileFdInfoList", fileFdInfoList);
+  }
+
+  @Override
+  public Slice<StEntry> findAllBySymbSlice(String symb, int page, int size, String desc) {
+    List<String> symbList = comInfoServ.findAllBySymbContaining(symb)
+            .stream().map(ComInfo::getSymb).collect(Collectors.toList());
+    return super.getRepository()
+            .findAllByUserIdAndSymbIn(
+                    jwtUtils.getUserIdFromAuthentication(),
+                    symbList,
+                    PageRequest.of(page, size, "desc".equals(desc) ? Sort.Direction.DESC : Sort.Direction.ASC, "c8tDtm")
+            );
+  }
+
+  @Override
+  public Slice<StEntry> findAllByComNmSlice(String comNm, int page, int size, String desc) {
+    List<String> symbList = comInfoServ.findAllByComNmContaining(comNm)
+            .stream().map(ComInfo::getSymb).collect(Collectors.toList());
+    return super.getRepository()
+            .findAllByUserIdAndSymbIn(
+                    jwtUtils.getUserIdFromAuthentication(),
+                    symbList,
+                    PageRequest.of(page, size, "desc".equals(desc) ? Sort.Direction.DESC : Sort.Direction.ASC, "c8tDtm")
+            );
   }
 
   private List<StEntryVo> c8tEntryMiscData(List<StEntry> entryList) {

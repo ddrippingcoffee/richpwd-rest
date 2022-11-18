@@ -1,5 +1,8 @@
 package rich.pwd.repo;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +19,12 @@ public interface StEntryDao extends JpaRepository<StEntry, Long> {
   List<StEntry> findAllByUserIdAndDelDtmIsNullOrderByC8tDtmDesc(Long userId);
 
   List<StEntry> findAllByUserIdAndDelDtmIsNotNullOrderByDelDtmDesc(Long userId);
+
+  Page<StEntry> findAllByUserIdAndDelDtmIsNull(Long userId, Pageable pageable);
+
+  Page<StEntry> findAllByUserIdAndDelDtmIsNotNull(Long userId, Pageable pageable);
+
+  Slice<StEntry> findAllByUserIdAndSymbIn(Long userId, List<String> symbList, Pageable pageable);
 
   @Modifying
   @Query("update StEntry entry set entry.delDtm = :delDtm  where entry.userId = :userId and entry.symb = :symb  and entry.c8tDtm = :c8tDtm")

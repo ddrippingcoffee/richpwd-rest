@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -56,4 +57,7 @@ public class StEntry implements Serializable {
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, mappedBy = "stEntry")
   @JsonManagedReference
   private List<StDtl> stDtlList;
+
+  @Formula("(select COM_INFO.COM_NM from COM_INFO where COM_INFO.SYMB = SYMB)")
+  private String comNm;
 }

@@ -44,6 +44,16 @@ public class ComInfoServImpl extends BaseServImpl<ComInfo, Long, ComInfoDao> imp
   }
 
   @Override
+  public List<ComInfo> findAllBySymbContaining(String symb) {
+    return super.getRepository().findAllBySymbContaining(symb);
+  }
+
+  @Override
+  public List<ComInfo> findAllByComNmContaining(String comNm) {
+    return super.getRepository().findAllByComNmContaining(comNm);
+  }
+
+  @Override
   public Page<ComInfo> findAllBySymbPage(String symb, int page, int size, String desc) {
     return super.getRepository().findAllBySymbContaining(
             symb,

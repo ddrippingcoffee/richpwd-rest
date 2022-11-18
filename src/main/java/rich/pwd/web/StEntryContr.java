@@ -3,10 +3,12 @@ package rich.pwd.web;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Base64Utils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rich.pwd.bean.po.StEntry;
@@ -20,15 +22,20 @@ import rich.pwd.serv.intf.StFileFdServ;
 import rich.pwd.util.Key;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @RestController
 @RequestMapping("entry")
 @CrossOrigin(origins = "*", maxAge = 3600)
+@Validated
 public class StEntryContr {
 
   private static final String IMAGE_TYPE = "image";
@@ -61,6 +68,58 @@ public class StEntryContr {
   @GetMapping("/old")
   public ResponseEntity<?> getAllOldEntry() {
     return new ResponseEntity<>(stEntryServ.getAllOldEntry(), HttpStatus.OK);
+  }
+
+  @GetMapping("/s/pg/act")
+  public ResponseEntity<?> findAllActiveEntryByPage(
+          @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
+          @Min(value = 1, message = "最少 1 筆") @RequestParam int size,
+          @Pattern(regexp = "(^asc$|^desc$)", message = "排序輸入錯誤") @RequestParam String desc) {
+    return new ResponseEntity<>(
+            stEntryServ.findAllActiveEntryPage(page, size, desc), HttpStatus.OK);
+  }
+
+  @GetMapping("/s/pg/old")
+  public ResponseEntity<?> findAllOldEntryPage(
+          @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
+          @Min(value = 1, message = "最少 1 筆") @RequestParam int size,
+          @Pattern(regexp = "(^asc$|^desc$)", message = "排序輸入錯誤") @RequestParam String desc) {
+    return new ResponseEntity<>(
+            stEntryServ.findAllOldEntryPage(page, size, desc), HttpStatus.OK);
+  }
+
+  @GetMapping("/{symb}/file")
+  public ResponseEntity<?> getFileFdList(
+          @PathVariable String symb,
+          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime c8tDtm) {
+    try {
+      return new ResponseEntity<>(
+              stEntryServ.getEntryFileList(symb, c8tDtm), HttpStatus.OK);
+    } catch (ResourceNotFoundException ex) {
+      return ResponseEntity
+              .badRequest()
+              .body(new MessageResponse(ex.getMessage()));
+    }
+  }
+
+  @GetMapping("/s/sl/symb")
+  public ResponseEntity<?> findAllBySymbListSlice(
+          @NotBlank(message = "個股代號必填") @RequestParam String symb,
+          @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
+          @Min(value = 1, message = "最少 1 筆") @RequestParam int size,
+          @Pattern(regexp = "(^asc$|^desc$)", message = "排序輸入錯誤") @RequestParam String desc) {
+    return new ResponseEntity<>(
+            stEntryServ.findAllBySymbSlice(symb, page, size, desc), HttpStatus.OK);
+  }
+
+  @GetMapping("/s/sl/comNm")
+  public ResponseEntity<?> findAllByComNmSlice(
+          @NotBlank(message = "公司名必填") @RequestParam String comNm,
+          @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
+          @Min(value = 1, message = "最少 1 筆") @RequestParam int size,
+          @Pattern(regexp = "(^asc$|^desc$)", message = "排序輸入錯誤") @RequestParam String desc) {
+    return new ResponseEntity<>(
+            stEntryServ.findAllByComNmSlice(comNm, page, size, desc), HttpStatus.OK);
   }
 
   @PutMapping("/")
