@@ -11,8 +11,6 @@ import rich.pwd.bean.dto.proj.StFileDbProj;
 import rich.pwd.bean.dto.proj.StFileFdProj;
 import rich.pwd.bean.po.ComInfo;
 import rich.pwd.bean.po.StEntry;
-import rich.pwd.bean.vo.StEntryVo;
-import rich.pwd.config.AppProperties;
 import rich.pwd.config.jwt.JwtUtils;
 import rich.pwd.ex.BadRequestException;
 import rich.pwd.ex.ResourceNotFoundException;
@@ -25,7 +23,6 @@ import rich.pwd.serv.intf.StFileFdServ;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -82,22 +79,6 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
   }
 
   @Override
-  public Map<String, Object> getAllActiveEntry() {
-    List<StEntry> stEntryList = super.getRepository()
-            .findAllByUserIdAndDelDtmIsNullOrderByC8tDtmDesc(jwtUtils.getUserIdFromAuthentication());
-    return Map.of("stEntryList", c8tEntryMiscData(stEntryList),
-            "limitPerFile", AppProperties.MaxUploadSizePerFile,
-            "limitPerReq", AppProperties.MaxUploadSizePerRequest);
-  }
-
-  @Override
-  public Map<String, Object> getAllOldEntry() {
-    List<StEntry> stEntryList = super.getRepository()
-            .findAllByUserIdAndDelDtmIsNotNullOrderByDelDtmDesc(jwtUtils.getUserIdFromAuthentication());
-    return Map.of("stEntryList", c8tEntryMiscData(stEntryList));
-  }
-
-  @Override
   public Page<StEntry> findAllActiveEntryPage(int page, int size, String desc) {
     return super.getRepository().findAllByUserIdAndDelDtmIsNull(
             jwtUtils.getUserIdFromAuthentication(),
@@ -145,34 +126,6 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
                     symbList,
                     PageRequest.of(page, size, "desc".equals(desc) ? Sort.Direction.DESC : Sort.Direction.ASC, "c8tDtm")
             );
-  }
-
-  private List<StEntryVo> c8tEntryMiscData(List<StEntry> entryList) {
-    List<ComInfo> comInfoList = comInfoServ.findAll();
-    return entryList.stream().map(entry -> {
-      List<StFileDbProj> fileDbInfoList = stFileDbServ
-              .findAllActiveDbFileInfo(entry.getSymb(), entry.getC8tDtm());
-      List<StFileFdProj> fileFdInfoList = stFileFdServ
-              .findAllActiveFdFileInfo(entry.getSymb(), entry.getC8tDtm());
-      StEntryVo entryVo = StEntryVo.builder()
-              .stEntry(entry)
-              .fileDbInfoList(fileDbInfoList)
-              .fileFdInfoList(fileFdInfoList)
-              .build();
-      Optional<ComInfo> comInfoOp = comInfoList.stream()
-              .filter(info -> info.getSymb().equals(entry.getSymb()))
-              .findAny();
-      comInfoOp.ifPresentOrElse(comInfo -> {
-        entryVo.setComNm(comInfo.getComNm());
-        entryVo.setComType(comInfo.getComType());
-        entryVo.setComIndus(comInfo.getComIndus());
-      }, () -> {
-        entryVo.setComNm("N.A.");
-        entryVo.setComType("N.A.");
-        entryVo.setComIndus("N.A.");
-      });
-      return entryVo;
-    }).collect(Collectors.toList());
   }
 
   @Override

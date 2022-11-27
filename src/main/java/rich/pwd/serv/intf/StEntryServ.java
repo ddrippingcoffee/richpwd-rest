@@ -14,10 +14,6 @@ public interface StEntryServ extends BaseServ<StEntry, Long> {
                            MultipartFile[] fileDbs,
                            MultipartFile[] fileFds);
 
-  Map<String, Object> getAllActiveEntry();
-
-  Map<String, Object> getAllOldEntry();
-
   Page<StEntry> findAllActiveEntryPage(int page, int size, String desc);
 
   Page<StEntry> findAllOldEntryPage(int page, int size, String desc);

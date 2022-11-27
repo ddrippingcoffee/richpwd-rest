@@ -16,10 +16,6 @@ import java.util.List;
 @Repository
 public interface StEntryDao extends JpaRepository<StEntry, Long> {
 
-  List<StEntry> findAllByUserIdAndDelDtmIsNullOrderByC8tDtmDesc(Long userId);
-
-  List<StEntry> findAllByUserIdAndDelDtmIsNotNullOrderByDelDtmDesc(Long userId);
-
   Page<StEntry> findAllByUserIdAndDelDtmIsNull(Long userId, Pageable pageable);
 
   Page<StEntry> findAllByUserIdAndDelDtmIsNotNull(Long userId, Pageable pageable);

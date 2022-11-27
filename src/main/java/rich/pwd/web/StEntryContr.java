@@ -60,16 +60,6 @@ public class StEntryContr {
     return new ResponseEntity<>(stEntryServ.c8tStEntry(entry, fileDbs, fileFds), HttpStatus.CREATED);
   }
 
-  @GetMapping("/act")
-  public ResponseEntity<?> getAllActiveEntry() {
-    return new ResponseEntity<>(stEntryServ.getAllActiveEntry(), HttpStatus.OK);
-  }
-
-  @GetMapping("/old")
-  public ResponseEntity<?> getAllOldEntry() {
-    return new ResponseEntity<>(stEntryServ.getAllOldEntry(), HttpStatus.OK);
-  }
-
   @GetMapping("/s/pg/act")
   public ResponseEntity<?> findAllActiveEntryByPage(
           @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
@@ -79,6 +69,9 @@ public class StEntryContr {
             stEntryServ.findAllActiveEntryPage(page, size, desc), HttpStatus.OK);
   }
 
+  /**
+   * 無使用
+   */
   @GetMapping("/s/pg/old")
   public ResponseEntity<?> findAllOldEntryPage(
           @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
