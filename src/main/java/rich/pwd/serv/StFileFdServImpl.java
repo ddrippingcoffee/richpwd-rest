@@ -11,7 +11,6 @@ import rich.pwd.util.Key;
 
 import java.nio.file.Files;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -26,8 +25,8 @@ public class StFileFdServImpl extends BaseServImpl<StFileFd, Long, StFileFdDao> 
   }
 
   @Override
-  public void storeOne(Long userId, String symb, LocalDateTime c8tDtm, MultipartFile multipartFile) {
-    String fileName = c8tDtm.format(Key.yyMMDD_HHmmss_fmt) + "_" + multipartFile.getOriginalFilename();
+  public void storeOne(Long userId, String symb, LocalDateTime c8tDtm, MultipartFile multipartFile, int seq) {
+    String fileName = c8tDtm.format(Key.yyMMDD_HHmmss_fmt) + "_" + seq + "_" + multipartFile.getOriginalFilename();
     try {
       Files.copy(multipartFile.getInputStream(),
               Key.RESOURCES_FILE_FOLDER.resolve(fileName));
@@ -47,9 +46,9 @@ public class StFileFdServImpl extends BaseServImpl<StFileFd, Long, StFileFdDao> 
   @Override
   public void storeAll(String symb, LocalDateTime c8tDtm, MultipartFile[] multipartFiles) {
     Long userId = jwtUtils.getUserIdFromAuthentication();
-    Arrays.stream(multipartFiles).forEach(file -> {
-      this.storeOne(userId, symb, c8tDtm, file);
-    });
+    for (int i = 0; i < multipartFiles.length; i++) {
+      this.storeOne(userId, symb, c8tDtm, multipartFiles[i], i + 1);
+    }
   }
 
   @Override
