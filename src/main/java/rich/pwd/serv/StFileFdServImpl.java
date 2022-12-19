@@ -16,7 +16,6 @@ import java.util.List;
 @Service
 public class StFileFdServImpl extends BaseServImpl<StFileFd, Long, StFileFdDao> implements StFileFdServ {
 
-  private static final String IMAGE_TYPE = "image";
   private final JwtUtils jwtUtils;
 
   public StFileFdServImpl(StFileFdDao repository, JwtUtils jwtUtils) {
