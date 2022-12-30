@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import rich.pwd.bean.dto.proj.StEntryCountProj;
 import rich.pwd.bean.po.StEntry;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,47 @@ import java.util.List;
 
 @Repository
 public interface StEntryDao extends JpaRepository<StEntry, Long> {
+
+  @Query(value = "SELECT st_entry.symb, " +
+          "     com_info.com_nm comNm, " +
+          "     COUNT(*) entrySum, " +
+          "     COUNT(CASE WHEN st_entry.del_dtm IS NULL THEN 1 END) actSum, " +
+          "     COUNT(CASE WHEN st_entry.del_dtm IS NOT NULL THEN 1 END) oldSum " +
+          "     FROM st_entry INNER JOIN com_info ON st_entry.symb = com_info.symb " +
+          "     WHERE st_entry.user_id = ?1 GROUP BY st_entry.symb ORDER BY actSum DESC, st_entry.symb ",
+          countQuery = "SELECT COUNT(_sum.symbSum) FROM (SELECT COUNT(*) symbSum FROM st_entry WHERE user_id = ?1 GROUP BY symb) _sum ",
+          nativeQuery = true)
+  Page<StEntryCountProj> findTotalEntry(Long userId, Pageable pageable);
+
+  @Query(value = "SELECT st_entry.symb, " +
+          "     com_info.com_nm comNm, " +
+          "     COUNT(*) entrySum, " +
+          "     COUNT(CASE WHEN st_entry.del_dtm IS NULL THEN 1 END) actSum, " +
+          "     COUNT(CASE WHEN st_entry.del_dtm IS NOT NULL THEN 1 END) oldSum " +
+          "     FROM st_entry INNER JOIN com_info ON st_entry.symb = com_info.symb " +
+          "     WHERE st_entry.user_id = ?1 AND st_entry.symb LIKE CONCAT('%',?2,'%')" +
+          "     GROUP BY st_entry.symb ORDER BY actSum DESC, st_entry.symb ",
+          countQuery =
+                  "SELECT COUNT(_sum.symbSum) " +
+                          " FROM (SELECT COUNT(*) symbSum FROM st_entry WHERE user_id = ?1 AND symb LIKE CONCAT('%',?2,'%') GROUP BY symb) _sum ",
+          nativeQuery = true)
+  Slice<StEntryCountProj> findTotalEntryByFuzzySymb(Long userId, String symb, Pageable pageable);
+
+  @Query(value = "SELECT st_entry.symb, " +
+          "     com_info.com_nm comNm, " +
+          "     COUNT(*) entrySum, " +
+          "     COUNT(CASE WHEN st_entry.del_dtm IS NULL THEN 1 END) actSum, " +
+          "     COUNT(CASE WHEN st_entry.del_dtm IS NOT NULL THEN 1 END) oldSum " +
+          "     FROM st_entry INNER JOIN com_info ON st_entry.symb = com_info.symb " +
+          "     WHERE st_entry.user_id = ?1 AND st_entry.symb IN ?2 " +
+          "     GROUP BY st_entry.symb ORDER BY actSum DESC, st_entry.symb ",
+          countQuery =
+                  "SELECT COUNT(_sum.symbSum) " +
+                          " FROM (SELECT COUNT(*) symbSum FROM st_entry WHERE user_id = ?1 AND symb IN ?2 GROUP BY symb) _sum ",
+          nativeQuery = true)
+  Slice<StEntryCountProj> findTotalEntryBySymbList(Long userId, List<String> symbList, Pageable pageable);
+
+  Page<StEntry> findAllByUserIdAndSymbOrderByC8tDtmDesc(Long userId, String symb, Pageable pageable);
 
   Page<StEntry> findAllByUserIdAndDelDtmIsNull(Long userId, Pageable pageable);
 

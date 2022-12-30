@@ -60,6 +60,41 @@ public class StEntryContr {
     return new ResponseEntity<>(stEntryServ.c8tStEntry(entry, fileDbs, fileFds), HttpStatus.CREATED);
   }
 
+  @GetMapping("/s/pg/tot")
+  public ResponseEntity<?> getTotalEntryPage(
+          @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
+          @Min(value = 1, message = "最少 1 筆") @RequestParam int size) {
+    return new ResponseEntity<>(
+            stEntryServ.getTotalEntryPage(page, size), HttpStatus.OK);
+  }
+
+  @GetMapping("/s/pg/tot/symb")
+  public ResponseEntity<?> getTotalEntryByFuzzySymbSlice(
+          @NotBlank(message = "個股代號必填") @RequestParam String symb,
+          @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
+          @Min(value = 1, message = "最少 1 筆") @RequestParam int size) {
+    return new ResponseEntity<>(
+            stEntryServ.getTotalEntryByFuzzySymbSlice(symb, page, size), HttpStatus.OK);
+  }
+
+  @GetMapping("/s/pg/tot/comNm")
+  public ResponseEntity<?> getTotalEntryByFuzzyComNmSlice(
+          @NotBlank(message = "公司名必填") @RequestParam String comNm,
+          @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
+          @Min(value = 1, message = "最少 1 筆") @RequestParam int size) {
+    return new ResponseEntity<>(
+            stEntryServ.getTotalEntryByFuzzyComNmSlice(comNm, page, size), HttpStatus.OK);
+  }
+
+  @GetMapping("/s/pg/one")
+  public ResponseEntity<?> getOneEntryPage(
+          @NotBlank(message = "個股代號必填") @RequestParam String symb,
+          @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
+          @Min(value = 1, message = "最少 1 筆") @RequestParam int size) {
+    return new ResponseEntity<>(
+            stEntryServ.getOneEntryPage(symb, page, size), HttpStatus.OK);
+  }
+
   @GetMapping("/s/pg/act")
   public ResponseEntity<?> findAllActiveEntryByPage(
           @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,

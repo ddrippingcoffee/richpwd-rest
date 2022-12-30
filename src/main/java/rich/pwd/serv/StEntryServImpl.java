@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import rich.pwd.bean.dto.proj.StEntryCountProj;
 import rich.pwd.bean.dto.proj.StFileDbProj;
 import rich.pwd.bean.dto.proj.StFileFdProj;
 import rich.pwd.bean.po.ComInfo;
@@ -76,6 +77,43 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
       stFileFdServ.storeAll(entry.getSymb(), entry.getC8tDtm(), fileFds);
     }
     return entry.getC8tDtm();
+  }
+
+  @Override
+  public Page<StEntryCountProj> getTotalEntryPage(int page, int size) {
+    return super.getRepository().findTotalEntry(
+            jwtUtils.getUserIdFromAuthentication(),
+            PageRequest.of(page, size)
+    );
+  }
+
+  @Override
+  public Slice<StEntryCountProj> getTotalEntryByFuzzySymbSlice(String symb, int page, int size) {
+    return super.getRepository().findTotalEntryByFuzzySymb(
+            jwtUtils.getUserIdFromAuthentication(),
+            symb,
+            PageRequest.of(page, size)
+    );
+  }
+
+  @Override
+  public Slice<StEntryCountProj> getTotalEntryByFuzzyComNmSlice(String comNm, int page, int size) {
+    List<String> symbList = comInfoServ.findAllByComNmContaining(comNm)
+            .stream().map(ComInfo::getSymb).collect(Collectors.toList());
+    return super.getRepository().findTotalEntryBySymbList(
+            jwtUtils.getUserIdFromAuthentication(),
+            symbList,
+            PageRequest.of(page, size)
+    );
+  }
+
+  @Override
+  public Page<StEntry> getOneEntryPage(String symb, int page, int size) {
+    return super.getRepository().findAllByUserIdAndSymbOrderByC8tDtmDesc(
+            jwtUtils.getUserIdFromAuthentication(),
+            symb,
+            PageRequest.of(page, size)
+    );
   }
 
   @Override
