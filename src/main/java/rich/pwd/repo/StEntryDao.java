@@ -58,12 +58,6 @@ public interface StEntryDao extends JpaRepository<StEntry, Long> {
 
   Page<StEntry> findAllByUserIdAndSymbOrderByC8tDtmDesc(Long userId, String symb, Pageable pageable);
 
-  Page<StEntry> findAllByUserIdAndDelDtmIsNull(Long userId, Pageable pageable);
-
-  Page<StEntry> findAllByUserIdAndDelDtmIsNotNull(Long userId, Pageable pageable);
-
-  Slice<StEntry> findAllByUserIdAndSymbIn(Long userId, List<String> symbList, Pageable pageable);
-
   @Modifying
   @Query("update StEntry entry set entry.delDtm = :delDtm  where entry.userId = :userId and entry.symb = :symb  and entry.c8tDtm = :c8tDtm")
   int updateDeleteTimeByUserIdAndSymbAndC8tDtm(@Param("userId") Long userId,

@@ -24,7 +24,6 @@ import rich.pwd.util.Key;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
@@ -95,27 +94,6 @@ public class StEntryContr {
             stEntryServ.getOneEntryPage(symb, page, size), HttpStatus.OK);
   }
 
-  @GetMapping("/s/pg/act")
-  public ResponseEntity<?> findAllActiveEntryByPage(
-          @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
-          @Min(value = 1, message = "最少 1 筆") @RequestParam int size,
-          @Pattern(regexp = "(^asc$|^desc$)", message = "排序輸入錯誤") @RequestParam String desc) {
-    return new ResponseEntity<>(
-            stEntryServ.findAllActiveEntryPage(page, size, desc), HttpStatus.OK);
-  }
-
-  /**
-   * 無使用
-   */
-  @GetMapping("/s/pg/old")
-  public ResponseEntity<?> findAllOldEntryPage(
-          @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
-          @Min(value = 1, message = "最少 1 筆") @RequestParam int size,
-          @Pattern(regexp = "(^asc$|^desc$)", message = "排序輸入錯誤") @RequestParam String desc) {
-    return new ResponseEntity<>(
-            stEntryServ.findAllOldEntryPage(page, size, desc), HttpStatus.OK);
-  }
-
   @GetMapping("/{symb}/file")
   public ResponseEntity<?> getFileFdList(
           @PathVariable String symb,
@@ -128,26 +106,6 @@ public class StEntryContr {
               .badRequest()
               .body(new MessageResponse(ex.getMessage()));
     }
-  }
-
-  @GetMapping("/s/sl/symb")
-  public ResponseEntity<?> findAllBySymbListSlice(
-          @NotBlank(message = "個股代號必填") @RequestParam String symb,
-          @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
-          @Min(value = 1, message = "最少 1 筆") @RequestParam int size,
-          @Pattern(regexp = "(^asc$|^desc$)", message = "排序輸入錯誤") @RequestParam String desc) {
-    return new ResponseEntity<>(
-            stEntryServ.findAllBySymbSlice(symb, page, size, desc), HttpStatus.OK);
-  }
-
-  @GetMapping("/s/sl/comNm")
-  public ResponseEntity<?> findAllByComNmSlice(
-          @NotBlank(message = "公司名必填") @RequestParam String comNm,
-          @Min(value = 0, message = "頁數輸入錯誤") @RequestParam int page,
-          @Min(value = 1, message = "最少 1 筆") @RequestParam int size,
-          @Pattern(regexp = "(^asc$|^desc$)", message = "排序輸入錯誤") @RequestParam String desc) {
-    return new ResponseEntity<>(
-            stEntryServ.findAllByComNmSlice(comNm, page, size, desc), HttpStatus.OK);
   }
 
   @PutMapping("/")

@@ -23,15 +23,7 @@ public interface StEntryServ extends BaseServ<StEntry, Long> {
 
   Page<StEntry> getOneEntryPage(String symb, int page, int size);
 
-  Page<StEntry> findAllActiveEntryPage(int page, int size, String desc);
-
-  Page<StEntry> findAllOldEntryPage(int page, int size, String desc);
-
   Map<String, Object> getEntryFileList(String symb, LocalDateTime c8tDtm);
-
-  Slice<StEntry> findAllBySymbSlice(String symb, int page, int size, String desc);
-
-  Slice<StEntry> findAllByComNmSlice(String comNm, int page, int size, String desc);
 
   int updateDeleteTimeByUserIdAndSymbAndC8tDtm(String symb, LocalDateTime c8tDtm);
 }
