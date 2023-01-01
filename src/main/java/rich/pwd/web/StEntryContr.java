@@ -38,6 +38,7 @@ import java.util.Objects;
 public class StEntryContr {
 
   private static final String IMAGE_TYPE = "image";
+  private static final String PDF_TYPE = "application/pdf";
 
   private final StEntryServ stEntryServ;
   private final StFileDbServ stFileDbServ;
@@ -166,19 +167,25 @@ public class StEntryContr {
   }
 
   @GetMapping("/filefd64/{uid}")
-  public ResponseEntity<?> getFileFdImg64(@PathVariable String uid) {
+  public ResponseEntity<?> getFileFd64(@PathVariable String uid) {
     StFileFd fileFd = stFileFdServ.findById(Long.parseLong(uid)).orElseThrow();
-    Path file = Key.RESOURCES_FILE_FOLDER.resolve(fileFd.getFdFileNm());
-    String base64ImgStr = null;
+    String base64ImgStr = "";
+    if (IMAGE_TYPE.equals(fileFd.getFdFileTy().substring(0, 5))) {
+      base64ImgStr = c8tBase64Str(fileFd);
+    } else if (PDF_TYPE.equals(fileFd.getFdFileTy())) {
+      base64ImgStr = c8tBase64Str(fileFd);
+    }
+    return ResponseEntity.ok().body(base64ImgStr);
+  }
+
+  private String c8tBase64Str(StFileFd fileFd) {
     try {
-      if (IMAGE_TYPE.equals(fileFd.getFdFileTy().substring(0, 5))) {
-        Resource resource = new UrlResource(file.toUri());
-        base64ImgStr = "data:" + fileFd.getFdFileTy() + ";base64," +
-                Base64Utils.encodeToString(resource.getInputStream().readAllBytes());
-      }
+      Path file = Key.RESOURCES_FILE_FOLDER.resolve(fileFd.getFdFileNm());
+      Resource resource = new UrlResource(file.toUri());
+      return "data:" + fileFd.getFdFileTy() + ";base64," +
+              Base64Utils.encodeToString(resource.getInputStream().readAllBytes());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    return ResponseEntity.ok().body(base64ImgStr);
   }
 }
