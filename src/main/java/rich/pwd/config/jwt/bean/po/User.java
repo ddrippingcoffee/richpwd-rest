@@ -1,5 +1,7 @@
 package rich.pwd.config.jwt.bean.po;
 
+import lombok.ToString;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -13,6 +15,7 @@ import java.util.Set;
                 @UniqueConstraint(columnNames = "username"),
                 @UniqueConstraint(columnNames = "email")
         })
+@ToString
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

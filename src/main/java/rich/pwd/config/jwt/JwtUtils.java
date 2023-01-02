@@ -43,10 +43,12 @@ public class JwtUtils {
     return Jwts.parser().setSigningKey(AppProperties.JwtSecret).parseClaimsJws(token).getBody().getSubject();
   }
 
+  public UserDetailsImpl getAuthentication() {
+    return (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
   public Long getUserIdFromAuthentication() {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext()
-            .getAuthentication().getPrincipal();
-    return userDetails.getId();
+    return getAuthentication().getId();
   }
 
   public JwtTokenEnum validateJwtToken(String authToken) {

@@ -17,4 +17,9 @@ public class Key {
 
   public static final String yyMMDD_HHmmss = "yyMMdd@@HHmmss";
   public static final DateTimeFormatter yyMMDD_HHmmss_fmt = DateTimeFormatter.ofPattern(yyMMDD_HHmmss);
+
+  public static final String yyMMdd = "yyMMdd";
+  public static final DateTimeFormatter yyMMdd_fmt = DateTimeFormatter.ofPattern(yyMMdd);
+  public static final String HHmmss = "HHmmss";
+  public static final DateTimeFormatter HHmmss_fmt = DateTimeFormatter.ofPattern(HHmmss);
 }

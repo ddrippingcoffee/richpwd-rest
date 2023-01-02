@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import rich.pwd.bean.po.StEntry;
 import rich.pwd.bean.po.StFileDb;
 import rich.pwd.bean.po.StFileFd;
+import rich.pwd.config.jwt.JwtUtils;
+import rich.pwd.config.jwt.UserDetailsImpl;
 import rich.pwd.config.jwt.bean.payload.response.MessageResponse;
 import rich.pwd.ex.ResourceNotFoundException;
 import rich.pwd.serv.intf.StEntryServ;
@@ -40,14 +42,17 @@ public class StEntryContr {
   private static final String IMAGE_TYPE = "image";
   private static final String PDF_TYPE = "application/pdf";
 
+  private final JwtUtils jwtUtils;
   private final StEntryServ stEntryServ;
   private final StFileDbServ stFileDbServ;
   private final StFileFdServ stFileFdServ;
 
   @Autowired
-  public StEntryContr(StEntryServ stEntryServ,
+  public StEntryContr(JwtUtils jwtUtils,
+                      StEntryServ stEntryServ,
                       StFileDbServ stFileDbServ,
                       StFileFdServ stFileFdServ) {
+    this.jwtUtils = jwtUtils;
     this.stEntryServ = stEntryServ;
     this.stFileDbServ = stFileDbServ;
     this.stFileFdServ = stFileFdServ;
@@ -142,7 +147,13 @@ public class StEntryContr {
   @GetMapping("/filefd/{uid}")
   public ResponseEntity<?> downloadFileFd(@PathVariable String uid) throws MalformedURLException {
     StFileFd fileFd = stFileFdServ.findById(Long.parseLong(uid)).orElseThrow();
-    Path file = Key.RESOURCES_FILE_FOLDER.resolve(fileFd.getFdFileNm());
+    UserDetailsImpl userDtl = jwtUtils.getAuthentication();
+    Path file = Key.RESOURCES_FILE_FOLDER
+            .resolve(userDtl.getId() + "_" + userDtl.getUsername())
+            .resolve(fileFd.getSymb())
+            .resolve(fileFd.getC8tDtm().format(Key.yyMMdd_fmt))
+            .resolve(fileFd.getC8tDtm().format(Key.HHmmss_fmt))
+            .resolve(fileFd.getFdFileNm());
     Resource resource = new UrlResource(file.toUri());
 
     // https://blog.csdn.net/qq_42231437/article/details/107815358
@@ -179,8 +190,14 @@ public class StEntryContr {
   }
 
   private String c8tBase64Str(StFileFd fileFd) {
+    UserDetailsImpl userDtl = jwtUtils.getAuthentication();
+    Path file = Key.RESOURCES_FILE_FOLDER
+            .resolve(userDtl.getId() + "_" + userDtl.getUsername())
+            .resolve(fileFd.getSymb())
+            .resolve(fileFd.getC8tDtm().format(Key.yyMMdd_fmt))
+            .resolve(fileFd.getC8tDtm().format(Key.HHmmss_fmt))
+            .resolve(fileFd.getFdFileNm());
     try {
-      Path file = Key.RESOURCES_FILE_FOLDER.resolve(fileFd.getFdFileNm());
       Resource resource = new UrlResource(file.toUri());
       return "data:" + fileFd.getFdFileTy() + ";base64," +
               Base64Utils.encodeToString(resource.getInputStream().readAllBytes());
