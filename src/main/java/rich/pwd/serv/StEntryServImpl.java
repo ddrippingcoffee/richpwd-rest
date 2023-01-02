@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import rich.pwd.bean.dto.proj.StEntryCountProj;
-import rich.pwd.bean.dto.proj.StFileDbProj;
-import rich.pwd.bean.dto.proj.StFileFdProj;
 import rich.pwd.bean.po.ComInfo;
 import rich.pwd.bean.po.StEntry;
 import rich.pwd.config.jwt.JwtUtils;
@@ -17,7 +15,6 @@ import rich.pwd.ex.ResourceNotFoundException;
 import rich.pwd.repo.StEntryDao;
 import rich.pwd.serv.intf.ComInfoServ;
 import rich.pwd.serv.intf.StEntryServ;
-import rich.pwd.serv.intf.StFileDbServ;
 import rich.pwd.serv.intf.StFileFdServ;
 
 import java.time.LocalDateTime;
@@ -30,26 +27,21 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
 
   private final JwtUtils jwtUtils;
   private final ComInfoServ comInfoServ;
-  private final StFileDbServ stFileDbServ;
   private final StFileFdServ stFileFdServ;
 
   public StEntryServImpl(JwtUtils jwtUtils,
                          StEntryDao repository,
                          ComInfoServ comInfoServ,
-                         StFileDbServ stFileDbServ,
                          StFileFdServ stFileFdServ) {
     super(repository);
     this.jwtUtils = jwtUtils;
     this.comInfoServ = comInfoServ;
-    this.stFileDbServ = stFileDbServ;
     this.stFileFdServ = stFileFdServ;
   }
 
   @Override
   @Transactional
-  public LocalDateTime c8tStEntry(StEntry entry,
-                                  MultipartFile[] fileDbs,
-                                  MultipartFile[] fileFds) {
+  public LocalDateTime c8tStEntry(StEntry entry, MultipartFile[] fileFds) {
 
     entry.getStDtlList().forEach(dtl -> {
       if ("date".equals(dtl.getDtlTy())) {
@@ -69,9 +61,6 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
     entry.setUserId(jwtUtils.getUserIdFromAuthentication());
     entry.setC8tDtm(LocalDateTime.now());
     this.save(entry);
-    if (null != fileDbs) {
-      stFileDbServ.storeAll(entry.getSymb(), entry.getC8tDtm(), fileDbs);
-    }
     if (null != fileFds) {
       stFileFdServ.storeAll(entry.getSymb(), entry.getC8tDtm(), fileFds);
     }
@@ -117,12 +106,7 @@ public class StEntryServImpl extends BaseServImpl<StEntry, Long, StEntryDao> imp
 
   @Override
   public Map<String, Object> getEntryFileList(String symb, LocalDateTime c8tDtm) {
-    List<StFileDbProj> fileDbInfoList =
-            stFileDbServ.findAllActiveDbFileInfo(symb, c8tDtm);
-    List<StFileFdProj> fileFdInfoList =
-            stFileFdServ.findAllActiveFdFileInfo(symb, c8tDtm);
-    return Map.of("fileDbInfoList", fileDbInfoList,
-            "fileFdInfoList", fileFdInfoList);
+    return Map.of("fileFdInfoList", stFileFdServ.findAllActiveFdFileInfo(symb, c8tDtm));
   }
 
   @Override

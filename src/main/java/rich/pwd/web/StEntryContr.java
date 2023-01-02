@@ -12,14 +12,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rich.pwd.bean.po.StEntry;
-import rich.pwd.bean.po.StFileDb;
 import rich.pwd.bean.po.StFileFd;
 import rich.pwd.config.jwt.JwtUtils;
 import rich.pwd.config.jwt.UserDetailsImpl;
 import rich.pwd.config.jwt.bean.payload.response.MessageResponse;
 import rich.pwd.ex.ResourceNotFoundException;
 import rich.pwd.serv.intf.StEntryServ;
-import rich.pwd.serv.intf.StFileDbServ;
 import rich.pwd.serv.intf.StFileFdServ;
 import rich.pwd.util.Key;
 
@@ -44,25 +42,21 @@ public class StEntryContr {
 
   private final JwtUtils jwtUtils;
   private final StEntryServ stEntryServ;
-  private final StFileDbServ stFileDbServ;
   private final StFileFdServ stFileFdServ;
 
   @Autowired
   public StEntryContr(JwtUtils jwtUtils,
                       StEntryServ stEntryServ,
-                      StFileDbServ stFileDbServ,
                       StFileFdServ stFileFdServ) {
     this.jwtUtils = jwtUtils;
     this.stEntryServ = stEntryServ;
-    this.stFileDbServ = stFileDbServ;
     this.stFileFdServ = stFileFdServ;
   }
 
   @PostMapping("/stores")
   public ResponseEntity<?> storeAll(@Valid @RequestPart(value = "entryJsonStr", required = true) StEntry entry,
-                                    @RequestParam(value = "fileDbs", required = false) MultipartFile[] fileDbs,
                                     @RequestParam(value = "fileFds", required = false) MultipartFile[] fileFds) {
-    return new ResponseEntity<>(stEntryServ.c8tStEntry(entry, fileDbs, fileFds), HttpStatus.CREATED);
+    return new ResponseEntity<>(stEntryServ.c8tStEntry(entry, fileFds), HttpStatus.CREATED);
   }
 
   @GetMapping("/s/pg/tot")
@@ -127,23 +121,6 @@ public class StEntryContr {
     }
   }
 
-  /*
-    目前無使用
-  @GetMapping("/filedb/{uid}")
-  public ResponseEntity<?> downloadFileDb(@PathVariable String uid) {
-    StFileDb fileDb = stFileDbServ.findById(Long.parseLong(uid)).orElseThrow();
-
-    // https://blog.csdn.net/qq_42231437/article/details/107815358
-    // 設置了 header 之後，直接用瀏覽器測試，不要用 postman 測試
-
-    String headerValue = "attachment; filename=" +
-            java.net.URLEncoder.encode(Objects.requireNonNull(fileDb.getDbFileNm()), StandardCharsets.UTF_8);
-    return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
-            .body(fileDb.getDbFileData());
-  }
-   */
-
   @GetMapping("/filefd/{uid}")
   public ResponseEntity<?> downloadFileFd(@PathVariable String uid) throws MalformedURLException {
     StFileFd fileFd = stFileFdServ.findById(Long.parseLong(uid)).orElseThrow();
@@ -164,17 +141,6 @@ public class StEntryContr {
     return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
             .body(resource);
-  }
-
-  @GetMapping("/filedb64/{uid}")
-  public ResponseEntity<?> getFileDbImg64(@PathVariable String uid) {
-    StFileDb fileDb = stFileDbServ.findById(Long.parseLong(uid)).orElseThrow();
-    String base64ImgStr = null;
-    if (IMAGE_TYPE.equals(fileDb.getDbFileTy().substring(0, 5))) {
-      base64ImgStr = "data:" + fileDb.getDbFileTy() + ";base64," +
-              Base64Utils.encodeToString(fileDb.getDbFileData());
-    }
-    return ResponseEntity.ok().body(base64ImgStr);
   }
 
   @GetMapping("/filefd64/{uid}")

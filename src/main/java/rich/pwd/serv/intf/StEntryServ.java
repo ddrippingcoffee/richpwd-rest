@@ -11,9 +11,7 @@ import java.util.Map;
 
 public interface StEntryServ extends BaseServ<StEntry, Long> {
 
-  LocalDateTime c8tStEntry(StEntry entry,
-                           MultipartFile[] fileDbs,
-                           MultipartFile[] fileFds);
+  LocalDateTime c8tStEntry(StEntry entry, MultipartFile[] fileFds);
 
   Page<StEntryCountProj> getTotalEntryPage(int page, int size);
 
