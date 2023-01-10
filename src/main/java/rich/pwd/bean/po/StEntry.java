@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
@@ -20,6 +21,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@BatchSize(size = 1)
 public class StEntry implements Serializable {
   /**
    * 流水號
@@ -56,6 +58,7 @@ public class StEntry implements Serializable {
   @Valid
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, mappedBy = "stEntry")
   @JsonManagedReference
+  @BatchSize(size = 20)
   private List<StDtl> stDtlList;
 
   @Formula("(select COM_INFO.COM_NM from COM_INFO where COM_INFO.SYMB = SYMB)")
